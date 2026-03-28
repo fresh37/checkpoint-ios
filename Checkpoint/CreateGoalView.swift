@@ -7,7 +7,6 @@
 
 import SwiftData
 import SwiftUI
-import Foundation
 
 // MARK: - View
 
