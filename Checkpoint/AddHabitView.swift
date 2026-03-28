@@ -64,13 +64,13 @@ struct AddHabitView: View {
     // MARK: - Sections
 
     private var habitSection: some View {
-        settingsGroup(label: "Habit") {
+        SettingsGroup(label: "Habit") {
             textFieldRow(placeholder: "e.g. Meditate 10 min", text: $name)
         }
     }
 
     private var rewardSection: some View {
-        settingsGroup(label: "Reward") {
+        SettingsGroup(label: "Reward") {
             HStack {
                 Text("$")
                     .font(.system(size: 17, weight: .regular))
@@ -87,7 +87,7 @@ struct AddHabitView: View {
 
     private var habitLoopSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            settingsGroup(label: "Habit Loop") {
+            SettingsGroup(label: "Habit Loop") {
                 Button {
                     withAnimation(.easeInOut(duration: 0.25)) { showHabitLoop.toggle() }
                 } label: {
@@ -154,28 +154,6 @@ struct AddHabitView: View {
                 .font(.system(size: 12, weight: .light))
                 .foregroundStyle(Color.appTextMuted)
                 .padding(.leading, 4)
-        }
-    }
-
-    // MARK: - Group container
-
-    @ViewBuilder
-    private func settingsGroup<Content: View>(
-        label: String,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(label.uppercased())
-                .font(.system(size: 11, weight: .medium))
-                .tracking(1.2)
-                .foregroundStyle(Color.appTextMuted)
-                .padding(.leading, 4)
-
-            VStack(spacing: 0) {
-                content()
-            }
-            .background(Color.appSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 

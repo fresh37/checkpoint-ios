@@ -20,3 +20,26 @@ extension Color {
     static let appTextMuted   = Color.white.opacity(0.38)
     static let appDivider     = Color.white.opacity(0.07)
 }
+
+// MARK: - Reusable Components
+
+struct SettingsGroup<Content: View>: View {
+    let label: String
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label.uppercased())
+                .font(.system(size: 11, weight: .medium))
+                .tracking(1.2)
+                .foregroundStyle(Color.appTextMuted)
+                .padding(.leading, 4)
+
+            VStack(spacing: 0) {
+                content()
+            }
+            .background(Color.appSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+    }
+}

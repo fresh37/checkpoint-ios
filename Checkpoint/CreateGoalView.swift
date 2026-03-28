@@ -59,7 +59,7 @@ struct CreateGoalView: View {
     // MARK: - Sections
 
     private var goalSection: some View {
-        settingsGroup(label: "What are you saving for?") {
+        SettingsGroup(label: "What are you saving for?") {
             TextField("e.g. New running shoes", text: $name)
                 .font(.system(size: 17, weight: .regular))
                 .foregroundStyle(Color.appTextPrimary)
@@ -69,7 +69,7 @@ struct CreateGoalView: View {
     }
 
     private var amountSection: some View {
-        settingsGroup(label: "Goal Amount") {
+        SettingsGroup(label: "Goal Amount") {
             HStack {
                 Text("$")
                     .font(.system(size: 17, weight: .regular))
@@ -81,28 +81,6 @@ struct CreateGoalView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 13)
-        }
-    }
-
-    // MARK: - Group container
-
-    @ViewBuilder
-    private func settingsGroup<Content: View>(
-        label: String,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(label.uppercased())
-                .font(.system(size: 11, weight: .medium))
-                .tracking(1.2)
-                .foregroundStyle(Color.appTextMuted)
-                .padding(.leading, 4)
-
-            VStack(spacing: 0) {
-                content()
-            }
-            .background(Color.appSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 

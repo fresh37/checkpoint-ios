@@ -43,7 +43,7 @@ struct SettingsDrawer: View {
                     VStack(alignment: .leading, spacing: 32) {
 
                         // Reminders
-                        settingsGroup(label: "Reminders") {
+                        SettingsGroup(label: "Reminders") {
                             stepperRow(
                                 label: "\(draft.remindersPerDay) \(draft.remindersPerDay == 1 ? "reminder" : "reminders") per day",
                                 value: $draft.remindersPerDay,
@@ -52,7 +52,7 @@ struct SettingsDrawer: View {
                         }
 
                         // Schedule
-                        settingsGroup(label: "Schedule") {
+                        SettingsGroup(label: "Schedule") {
                             pickerRow(label: "Start",
                                       selection: $draft.startHour,
                                       values: Array(5...23))
@@ -65,7 +65,7 @@ struct SettingsDrawer: View {
                         }
 
                         // Categories
-                        settingsGroup(label: "Categories") {
+                        SettingsGroup(label: "Categories") {
                             toggleRow(label: "Gratitude",      isOn: $draft.gratitude)
                             rowDivider
                             toggleRow(label: "Body Awareness", isOn: $draft.bodyAwareness)
@@ -74,7 +74,7 @@ struct SettingsDrawer: View {
                         }
 
                         // Meditation
-                        settingsGroup(label: "Meditation") {
+                        SettingsGroup(label: "Meditation") {
                             toggleRow(label: "Enable", isOn: $draft.meditationEnabled)
                             if draft.meditationEnabled {
                                 rowDivider
@@ -95,7 +95,7 @@ struct SettingsDrawer: View {
                         }
 
                         // System
-                        settingsGroup(label: "System") {
+                        SettingsGroup(label: "System") {
                             toggleRow(label: "Haptic Feedback", isOn: $draft.hapticFeedback)
                             rowDivider
                             notificationsRow
@@ -128,28 +128,6 @@ struct SettingsDrawer: View {
             // to avoid a redundant onChange re-fire.
             if validated != draft { draft = validated }
             prefs = validated
-        }
-    }
-
-    // MARK: - Group container
-
-    @ViewBuilder
-    private func settingsGroup<Content: View>(
-        label: String,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(label.uppercased())
-                .font(.system(size: 11, weight: .medium))
-                .tracking(1.2)
-                .foregroundStyle(Color.appTextMuted)
-                .padding(.leading, 4)
-
-            VStack(spacing: 0) {
-                content()
-            }
-            .background(Color.appSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 
