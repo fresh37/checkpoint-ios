@@ -7,18 +7,6 @@
 
 import SwiftData
 import SwiftUI
-import Foundation
-
-// MARK: - Colors
-
-private extension Color {
-    static let kBackground  = Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255)
-    static let kSurface     = Color(red: 0x18/255, green: 0x21/255, blue: 0x30/255)
-    static let kAccent      = Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255)
-    static let kTextPrimary = Color.white.opacity(0.88)
-    static let kTextMuted   = Color.white.opacity(0.38)
-    static let kDivider     = Color.white.opacity(0.07)
-}
 
 // MARK: - View
 
@@ -32,7 +20,7 @@ struct CreateGoalView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.kBackground.ignoresSafeArea()
+                Color.appBackground.ignoresSafeArea()
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
                         goalSection
@@ -46,17 +34,17 @@ struct CreateGoalView: View {
             }
             .navigationTitle("New Goal")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.kBackground, for: .navigationBar)
+            .toolbarBackground(Color.appBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
-                        .foregroundStyle(Color.kAccent)
+                        .foregroundStyle(Color.appAccent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create") { saveGoal() }
-                        .foregroundStyle(isValid ? Color.kAccent : Color.kTextMuted)
+                        .foregroundStyle(isValid ? Color.appAccent : Color.appTextMuted)
                         .disabled(!isValid)
                 }
             }
@@ -64,56 +52,34 @@ struct CreateGoalView: View {
         .colorScheme(.dark)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(Color.kBackground)
+        .presentationBackground(Color.appBackground)
     }
 
     // MARK: - Sections
 
     private var goalSection: some View {
-        settingsGroup(label: "What are you saving for?") {
+        SettingsGroup(label: "What are you saving for?") {
             TextField("e.g. New running shoes", text: $name)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.kTextPrimary)
+                .foregroundStyle(Color.appTextPrimary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 13)
         }
     }
 
     private var amountSection: some View {
-        settingsGroup(label: "Goal Amount") {
+        SettingsGroup(label: "Goal Amount") {
             HStack {
                 Text("$")
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.kTextMuted)
+                    .foregroundStyle(Color.appTextMuted)
                 TextField("0.00", text: $amountText)
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.kTextPrimary)
+                    .foregroundStyle(Color.appTextPrimary)
                     .keyboardType(.decimalPad)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 13)
-        }
-    }
-
-    // MARK: - Group container
-
-    @ViewBuilder
-    private func settingsGroup<Content: View>(
-        label: String,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(label.uppercased())
-                .font(.system(size: 11, weight: .medium))
-                .tracking(1.2)
-                .foregroundStyle(Color.kTextMuted)
-                .padding(.leading, 4)
-
-            VStack(spacing: 0) {
-                content()
-            }
-            .background(Color.kSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 

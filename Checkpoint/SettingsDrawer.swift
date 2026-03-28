@@ -11,17 +11,6 @@ import SwiftUI
 import UserNotifications
 import UIKit
 
-// MARK: - Colors
-
-private extension Color {
-    static let kBackground   = Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255)
-    static let kSurface      = Color(red: 0x18/255, green: 0x21/255, blue: 0x30/255)
-    static let kAccent       = Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255)
-    static let kTextPrimary  = Color.white.opacity(0.88)
-    static let kTextMuted    = Color.white.opacity(0.38)
-    static let kDivider      = Color.white.opacity(0.07)
-}
-
 // MARK: - View
 
 struct SettingsDrawer: View {
@@ -48,13 +37,13 @@ struct SettingsDrawer: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.kBackground.ignoresSafeArea()
+                Color.appBackground.ignoresSafeArea()
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
 
                         // Reminders
-                        settingsGroup(label: "Reminders") {
+                        SettingsGroup(label: "Reminders") {
                             stepperRow(
                                 label: "\(draft.remindersPerDay) \(draft.remindersPerDay == 1 ? "reminder" : "reminders") per day",
                                 value: $draft.remindersPerDay,
@@ -63,7 +52,7 @@ struct SettingsDrawer: View {
                         }
 
                         // Schedule
-                        settingsGroup(label: "Schedule") {
+                        SettingsGroup(label: "Schedule") {
                             pickerRow(label: "Start",
                                       selection: $draft.startHour,
                                       values: Array(5...23))
@@ -76,7 +65,7 @@ struct SettingsDrawer: View {
                         }
 
                         // Categories
-                        settingsGroup(label: "Categories") {
+                        SettingsGroup(label: "Categories") {
                             toggleRow(label: "Gratitude",      isOn: $draft.gratitude)
                             rowDivider
                             toggleRow(label: "Body Awareness", isOn: $draft.bodyAwareness)
@@ -85,7 +74,7 @@ struct SettingsDrawer: View {
                         }
 
                         // Meditation
-                        settingsGroup(label: "Meditation") {
+                        SettingsGroup(label: "Meditation") {
                             toggleRow(label: "Enable", isOn: $draft.meditationEnabled)
                             if draft.meditationEnabled {
                                 rowDivider
@@ -106,7 +95,7 @@ struct SettingsDrawer: View {
                         }
 
                         // System
-                        settingsGroup(label: "System") {
+                        SettingsGroup(label: "System") {
                             toggleRow(label: "Haptic Feedback", isOn: $draft.hapticFeedback)
                             rowDivider
                             notificationsRow
@@ -119,18 +108,17 @@ struct SettingsDrawer: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.kBackground, for: .navigationBar)
+            .toolbarBackground(Color.appBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
         .colorScheme(.dark)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(Color.kBackground)
-        .onAppear {
-            UNUserNotificationCenter.current().getNotificationSettings { s in
-                DispatchQueue.main.async { notifStatus = s.authorizationStatus }
-            }
+        .presentationBackground(Color.appBackground)
+        .task {
+            let s = await UNUserNotificationCenter.current().notificationSettings()
+            notifStatus = s.authorizationStatus
         }
         // Validate and sync to parent binding on every draft change.
         .onChange(of: draft) { _, _ in
@@ -142,28 +130,6 @@ struct SettingsDrawer: View {
         }
     }
 
-    // MARK: - Group container
-
-    @ViewBuilder
-    private func settingsGroup<Content: View>(
-        label: String,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(label.uppercased())
-                .font(.system(size: 11, weight: .medium))
-                .tracking(1.2)
-                .foregroundStyle(Color.kTextMuted)
-                .padding(.leading, 4)
-
-            VStack(spacing: 0) {
-                content()
-            }
-            .background(Color.kSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        }
-    }
-
     // MARK: - Row types
 
     @ViewBuilder
@@ -171,9 +137,9 @@ struct SettingsDrawer: View {
         Toggle(isOn: isOn) {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.kTextPrimary)
+                .foregroundStyle(Color.appTextPrimary)
         }
-        .tint(Color.kAccent)
+        .tint(Color.appAccent)
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
     }
@@ -183,7 +149,7 @@ struct SettingsDrawer: View {
         HStack {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.kTextPrimary)
+                .foregroundStyle(Color.appTextPrimary)
             Spacer()
             Stepper("", value: value, in: range)
                 .labelsHidden()
@@ -197,7 +163,7 @@ struct SettingsDrawer: View {
         HStack {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.kTextPrimary)
+                .foregroundStyle(Color.appTextPrimary)
             Spacer()
             Picker("", selection: selection) {
                 ForEach(values, id: \.self) { hour in
@@ -205,7 +171,7 @@ struct SettingsDrawer: View {
                 }
             }
             .pickerStyle(.menu)
-            .tint(Color.kAccent)
+            .tint(Color.appAccent)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
@@ -226,12 +192,12 @@ struct SettingsDrawer: View {
                 } label: {
                     Text(dayLetter(day))
                         .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(isOn ? Color.kAccent : Color.kTextMuted)
+                        .foregroundStyle(isOn ? Color.appAccent : Color.appTextMuted)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(
                             isOn
-                                ? Color.kAccent.opacity(0.12)
+                                ? Color.appAccent.opacity(0.12)
                                 : Color.clear
                         )
                 }
@@ -249,7 +215,7 @@ struct SettingsDrawer: View {
 
     private var rowDivider: some View {
         Rectangle()
-            .fill(Color.kDivider)
+            .fill(Color.appDivider)
             .frame(height: 0.5)
             .padding(.leading, 16)
     }
@@ -263,7 +229,7 @@ struct SettingsDrawer: View {
             HStack {
                 Text(notificationsLabel)
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.kTextPrimary)
+                    .foregroundStyle(Color.appTextPrimary)
                 Spacer()
             }
             .padding(.horizontal, 16)
@@ -290,14 +256,11 @@ struct SettingsDrawer: View {
                 openURL(url)
             }
         default: // .notDetermined
-            UNUserNotificationCenter.current().requestAuthorization(
-                options: [.alert, .sound, .badge]
-            ) { granted, _ in
-                DispatchQueue.main.async {
-                    notifStatus = granted ? .authorized : .denied
-                    if granted {
-                        draft.notificationsEnabled = true
-                    }
+            Task {
+                let granted = (try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+                notifStatus = granted ? .authorized : .denied
+                if granted {
+                    draft.notificationsEnabled = true
                 }
             }
         }

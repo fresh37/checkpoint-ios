@@ -17,8 +17,10 @@
 
 import BackgroundTasks
 import Foundation
+import os
 
 enum BackgroundRefresh {
+    private static let logger = Logger(subsystem: "com.kevinfish.Checkpoint", category: "BackgroundRefresh")
     static let taskIdentifier = "com.kevinfish.Checkpoint.refresh"
 
     // Call once from CheckpointApp.init() — before the first scene is created.
@@ -27,7 +29,8 @@ enum BackgroundRefresh {
             forTaskWithIdentifier: taskIdentifier,
             using: nil                          // nil = run on main queue
         ) { task in
-            handle(task: task as! BGAppRefreshTask)
+            guard let refreshTask = task as? BGAppRefreshTask else { return }
+            handle(task: refreshTask)
         }
     }
 
@@ -40,7 +43,7 @@ enum BackgroundRefresh {
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {
-            print("Checkpoint: could not schedule background refresh: \(error)")
+            logger.error("Could not schedule background refresh: \(error)")
         }
     }
 

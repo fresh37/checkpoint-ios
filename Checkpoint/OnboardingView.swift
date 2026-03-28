@@ -26,7 +26,7 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255)
+            Color.appBackground
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -38,9 +38,9 @@ struct OnboardingView: View {
                         RadialGradient(
                             stops: [
                                 .init(color: Color(red: 0xd8/255, green: 0xec/255, blue: 0xfa/255), location: 0.00),
-                                .init(color: Color(red: 0xa0/255, green: 0xd0/255, blue: 0xee/255), location: 0.30),
-                                .init(color: Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255), location: 0.60),
-                                .init(color: Color(red: 0x4a/255, green: 0x94/255, blue: 0xd0/255), location: 0.85),
+                                .init(color: .appAccentLight, location: 0.30),
+                                .init(color: .appAccent, location: 0.60),
+                                .init(color: .appAccentDeep, location: 0.85),
                                 .init(color: Color(red: 0x38/255, green: 0x80/255, blue: 0xc0/255), location: 1.00),
                             ],
                             center: UnitPoint(x: 0.42, y: 0.36),
@@ -88,16 +88,16 @@ struct OnboardingView: View {
                     Group {
                         if isRequesting {
                             ProgressView()
-                                .tint(Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255))
+                                .tint(Color.appBackground)
                         } else {
                             Text("Enable Reminders")
                                 .font(.system(size: 17, weight: .semibold))
-                                .foregroundColor(Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255))
+                                .foregroundColor(.appBackground)
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255))
+                    .background(Color.appAccent)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
                 .padding(.horizontal, 32)
@@ -154,17 +154,13 @@ struct OnboardingView: View {
 
     private func requestPermissionAndFinish() {
         isRequesting = true
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: [.alert, .sound, .badge]
-        ) { granted, _ in
-            // Fires on a background thread — hop back to main before touching state/UI.
-            DispatchQueue.main.async {
-                if granted {
-                    NotificationScheduler.scheduleNotifications(prefs: prefs)
-                    showWelcome = true
-                }
-                isComplete = true
+        Task {
+            let granted = (try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+            if granted {
+                NotificationScheduler.scheduleNotifications(prefs: prefs)
+                showWelcome = true
             }
+            isComplete = true
         }
     }
 }

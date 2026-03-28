@@ -26,7 +26,7 @@ struct HabitsView: View {
 
     var body: some View {
         ZStack {
-            Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255)
+            Color.appBackground
                 .ignoresSafeArea()
 
             if let goal = activeGoal {
@@ -122,7 +122,7 @@ struct HabitsView: View {
                                 Button { habitToEdit = habit } label: {
                                     Image(systemName: "pencil")
                                 }
-                                .tint(Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255))
+                                .tint(Color.appAccent)
                             }
                     }
                     .onMove { from, to in
@@ -195,10 +195,7 @@ struct HabitsView: View {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(
                             LinearGradient(
-                                colors: [
-                                    Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255),
-                                    Color(red: 0x4a/255, green: 0x94/255, blue: 0xd0/255)
-                                ],
+                                colors: [.appAccent, .appAccentDeep],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -241,7 +238,7 @@ struct HabitsView: View {
                 Spacer()
                 Text("+\(habit.formattedReward)")
                     .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundColor(Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255))
+                    .foregroundColor(.appAccent)
             }
             .padding(.vertical, 14)
             .padding(.horizontal, 16)
