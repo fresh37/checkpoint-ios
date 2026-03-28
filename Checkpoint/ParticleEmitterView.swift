@@ -23,11 +23,7 @@ struct ParticleEmitterView: View {
     @State private var particles: [Particle] = []
     @State private var animate = false
 
-    private static let palette: [Color] = [
-        Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255),
-        Color(red: 0xa0/255, green: 0xd0/255, blue: 0xee/255),
-        .white
-    ]
+    private static let palette: [Color] = [.appAccent, .appAccentLight, .white]
 
     var body: some View {
         GeometryReader { geo in

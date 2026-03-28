@@ -11,17 +11,6 @@ import SwiftUI
 import UserNotifications
 import UIKit
 
-// MARK: - Colors
-
-private extension Color {
-    static let kBackground   = Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255)
-    static let kSurface      = Color(red: 0x18/255, green: 0x21/255, blue: 0x30/255)
-    static let kAccent       = Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255)
-    static let kTextPrimary  = Color.white.opacity(0.88)
-    static let kTextMuted    = Color.white.opacity(0.38)
-    static let kDivider      = Color.white.opacity(0.07)
-}
-
 // MARK: - View
 
 struct SettingsDrawer: View {
@@ -48,7 +37,7 @@ struct SettingsDrawer: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.kBackground.ignoresSafeArea()
+                Color.appBackground.ignoresSafeArea()
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
@@ -119,14 +108,14 @@ struct SettingsDrawer: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.kBackground, for: .navigationBar)
+            .toolbarBackground(Color.appBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
         .colorScheme(.dark)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(Color.kBackground)
+        .presentationBackground(Color.appBackground)
         .onAppear {
             UNUserNotificationCenter.current().getNotificationSettings { s in
                 DispatchQueue.main.async { notifStatus = s.authorizationStatus }
@@ -153,13 +142,13 @@ struct SettingsDrawer: View {
             Text(label.uppercased())
                 .font(.system(size: 11, weight: .medium))
                 .tracking(1.2)
-                .foregroundStyle(Color.kTextMuted)
+                .foregroundStyle(Color.appTextMuted)
                 .padding(.leading, 4)
 
             VStack(spacing: 0) {
                 content()
             }
-            .background(Color.kSurface)
+            .background(Color.appSurface)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
@@ -171,9 +160,9 @@ struct SettingsDrawer: View {
         Toggle(isOn: isOn) {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.kTextPrimary)
+                .foregroundStyle(Color.appTextPrimary)
         }
-        .tint(Color.kAccent)
+        .tint(Color.appAccent)
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
     }
@@ -183,7 +172,7 @@ struct SettingsDrawer: View {
         HStack {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.kTextPrimary)
+                .foregroundStyle(Color.appTextPrimary)
             Spacer()
             Stepper("", value: value, in: range)
                 .labelsHidden()
@@ -197,7 +186,7 @@ struct SettingsDrawer: View {
         HStack {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.kTextPrimary)
+                .foregroundStyle(Color.appTextPrimary)
             Spacer()
             Picker("", selection: selection) {
                 ForEach(values, id: \.self) { hour in
@@ -205,7 +194,7 @@ struct SettingsDrawer: View {
                 }
             }
             .pickerStyle(.menu)
-            .tint(Color.kAccent)
+            .tint(Color.appAccent)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
@@ -226,12 +215,12 @@ struct SettingsDrawer: View {
                 } label: {
                     Text(dayLetter(day))
                         .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(isOn ? Color.kAccent : Color.kTextMuted)
+                        .foregroundStyle(isOn ? Color.appAccent : Color.appTextMuted)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(
                             isOn
-                                ? Color.kAccent.opacity(0.12)
+                                ? Color.appAccent.opacity(0.12)
                                 : Color.clear
                         )
                 }
@@ -249,7 +238,7 @@ struct SettingsDrawer: View {
 
     private var rowDivider: some View {
         Rectangle()
-            .fill(Color.kDivider)
+            .fill(Color.appDivider)
             .frame(height: 0.5)
             .padding(.leading, 16)
     }
@@ -263,7 +252,7 @@ struct SettingsDrawer: View {
             HStack {
                 Text(notificationsLabel)
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.kTextPrimary)
+                    .foregroundStyle(Color.appTextPrimary)
                 Spacer()
             }
             .padding(.horizontal, 16)

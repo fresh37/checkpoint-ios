@@ -8,11 +8,8 @@
 
 import SwiftUI
 
-private let sheetBackground = Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255)
-private let rowBackground   = Color(red: 0x17/255, green: 0x24/255, blue: 0x30/255)
-private let separator       = Color(red: 0x2a/255, green: 0x38/255, blue: 0x4a/255)
-private let mutedColor      = Color(red: 0x6c/255, green: 0x7a/255, blue: 0x8d/255)
-private let primaryColor    = Color.white.opacity(0.88)
+private let rowBackground = Color(red: 0x17/255, green: 0x24/255, blue: 0x30/255)
+private let separator     = Color(red: 0x2a/255, green: 0x38/255, blue: 0x4a/255)
 
 private let patternDescriptions: [String: String] = [
     "box":        "Focus & balance",
@@ -33,7 +30,7 @@ struct BreathingPatternSheet: View {
     var body: some View {
         NavigationView {
             ZStack {
-                sheetBackground.ignoresSafeArea()
+                Color.appBackground.ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -66,7 +63,7 @@ struct BreathingPatternSheet: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") { dismiss() }
                         .font(.system(size: 15, weight: .regular))
-                        .foregroundStyle(primaryColor)
+                        .foregroundStyle(Color.appTextPrimary)
                 }
             }
         }
@@ -90,20 +87,20 @@ struct BreathingPatternSheet: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(p.name)
                         .font(.system(size: 15, weight: .regular))
-                        .foregroundStyle(primaryColor)
+                        .foregroundStyle(Color.appTextPrimary)
                     Text(patternDescriptions[p.id] ?? "")
                         .font(.system(size: 12, weight: .regular))
-                        .foregroundStyle(mutedColor)
+                        .foregroundStyle(Color.appMuted)
                 }
                 Spacer()
                 Text(p.ratio)
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundStyle(mutedColor)
+                    .foregroundStyle(Color.appMuted)
                     .padding(.trailing, isSelected ? 8 : 0)
                 if isSelected {
                     Image(systemName: "checkmark")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255))
+                        .foregroundStyle(Color.appAccent)
                 }
             }
             .padding(.horizontal, 16)
@@ -131,25 +128,25 @@ struct BreathingPatternSheet: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Custom")
                         .font(.system(size: 15, weight: .regular))
-                        .foregroundStyle(primaryColor)
+                        .foregroundStyle(Color.appTextPrimary)
                     Text(patternDescriptions["custom"] ?? "")
                         .font(.system(size: 12, weight: .regular))
-                        .foregroundStyle(mutedColor)
+                        .foregroundStyle(Color.appMuted)
                 }
                 Spacer()
                 if isSelected {
                     Text(pattern.ratio)
                         .font(.system(size: 13, weight: .regular))
-                        .foregroundStyle(mutedColor)
+                        .foregroundStyle(Color.appMuted)
                         .padding(.trailing, 8)
                     Image(systemName: "checkmark")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255))
+                        .foregroundStyle(Color.appAccent)
                         .padding(.trailing, 8)
                 }
                 Image(systemName: "chevron.down")
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(mutedColor)
+                    .foregroundStyle(Color.appMuted)
                     .rotationEffect(.degrees(showCustomEditor ? 180 : 0))
                     .animation(.easeInOut(duration: 0.25), value: showCustomEditor)
             }
@@ -191,22 +188,22 @@ struct BreathingPatternSheet: View {
         HStack {
             Text(label)
                 .font(.system(size: 15, weight: .regular))
-                .foregroundStyle(primaryColor)
+                .foregroundStyle(Color.appTextPrimary)
             Spacer()
             if let zeroLabel, value.wrappedValue == 0 {
                 Text(zeroLabel)
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundStyle(mutedColor)
+                    .foregroundStyle(Color.appMuted)
                     .padding(.trailing, 6)
             } else {
                 Text("\(value.wrappedValue)s")
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundStyle(mutedColor)
+                    .foregroundStyle(Color.appMuted)
                     .padding(.trailing, 6)
             }
             Stepper("", value: value, in: range)
                 .labelsHidden()
-                .tint(mutedColor)
+                .tint(Color.appMuted)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -224,7 +221,7 @@ struct BreathingPatternSheet: View {
             Text(title)
                 .font(.system(size: 11, weight: .regular))
                 .tracking(11 * 0.08)
-                .foregroundStyle(mutedColor)
+                .foregroundStyle(Color.appMuted)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 8)
             Spacer()

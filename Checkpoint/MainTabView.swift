@@ -45,7 +45,7 @@ struct MainTabView: View {
 
     private var breatheContent: some View {
         ZStack {
-            Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255)
+            Color.appBackground
                 .ignoresSafeArea()
 
             VStack(spacing: 16) {
@@ -59,7 +59,7 @@ struct MainTabView: View {
                     }
                     .font(.system(size: 13, weight: .regular))
                     .tracking(13 * 0.08)
-                    .foregroundStyle(Color(red: 0x6c/255, green: 0x7a/255, blue: 0x8d/255))
+                    .foregroundStyle(Color.appMuted)
                 }
                 .buttonStyle(.plain)
             }

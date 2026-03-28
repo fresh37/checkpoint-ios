@@ -30,10 +30,7 @@ struct GoalCompletedView: View {
                     .trim(from: 0, to: ringProgress)
                     .stroke(
                         LinearGradient(
-                            colors: [
-                                Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255),
-                                Color(red: 0xa0/255, green: 0xd0/255, blue: 0xee/255)
-                            ],
+                            colors: [.appAccent, .appAccentLight],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -50,8 +47,7 @@ struct GoalCompletedView: View {
             .frame(width: 120, height: 120)
             .scaleEffect(ringScale)
             .shadow(
-                color: Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255)
-                    .opacity(ringGlowOpacity),
+                color: Color.appAccent.opacity(ringGlowOpacity),
                 radius: 20
             )
             .overlay(alignment: .center) {
@@ -74,7 +70,7 @@ struct GoalCompletedView: View {
 
                 Text(goal.formattedTarget)
                     .font(.system(size: 22, weight: .medium, design: .rounded))
-                    .foregroundColor(Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255))
+                    .foregroundColor(.appAccent)
                     .padding(.top, 4)
             }
             .opacity(showContent ? 1 : 0)

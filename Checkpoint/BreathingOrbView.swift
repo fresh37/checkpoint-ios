@@ -42,9 +42,9 @@ struct BreathingOrbView: View {
     private let orbGradient = RadialGradient(
         stops: [
             .init(color: Color(red: 0xd8/255, green: 0xec/255, blue: 0xfa/255), location: 0.00), // soft diffuse highlight
-            .init(color: Color(red: 0xa0/255, green: 0xd0/255, blue: 0xee/255), location: 0.30), // light blue body
-            .init(color: Color(red: 0x6c/255, green: 0xb0/255, blue: 0xe0/255), location: 0.60), // main sky blue
-            .init(color: Color(red: 0x4a/255, green: 0x94/255, blue: 0xd0/255), location: 0.85), // slightly deeper
+            .init(color: .appAccentLight, location: 0.30), // light blue body
+            .init(color: .appAccent, location: 0.60), // main sky blue
+            .init(color: .appAccentDeep, location: 0.85), // slightly deeper
             .init(color: Color(red: 0x38/255, green: 0x80/255, blue: 0xc0/255), location: 1.00), // subtle rim
         ],
         center: UnitPoint(x: 0.42, y: 0.36),
@@ -71,7 +71,7 @@ struct BreathingOrbView: View {
             Text(phase.label.uppercased())
                 .font(.system(size: 13, weight: .regular))
                 .tracking(13 * 0.18)         // letter-spacing: 0.18em
-                .foregroundColor(Color(red: 0x6c/255, green: 0x7a/255, blue: 0x8d/255))  // --muted
+                .foregroundColor(.appMuted)
                 .id(phase)
                 .transition(.opacity.animation(.easeInOut(duration: 0.3)))
         }
@@ -124,7 +124,7 @@ struct BreathingOrbView: View {
 
 #Preview {
     ZStack {
-        Color(red: 0x0f/255, green: 0x19/255, blue: 0x23/255).ignoresSafeArea()
+        Color.appBackground.ignoresSafeArea()
         BreathingOrbView()
     }
 }
