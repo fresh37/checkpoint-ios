@@ -31,6 +31,7 @@ struct BreathingOrbView: View {
     var pattern: BreathingPattern = .box
 
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.appTheme)   private var theme
 
     // Drives both scale and glow intensity together (like Presence's .expanded CSS class)
     @State private var isExpanded = false
@@ -39,48 +40,88 @@ struct BreathingOrbView: View {
 
     // Orb gradient — matte, diffuse highlight with a narrow colour range.
     // The highlight is broad and soft; the rim only slightly darker than the body.
-    private let orbGradient = RadialGradient(
-        stops: [
-            .init(color: Color(red: 0xd8/255, green: 0xec/255, blue: 0xfa/255), location: 0.00), // soft diffuse highlight
-            .init(color: .appAccentLight, location: 0.30), // light blue body
-            .init(color: .appAccent, location: 0.60), // main sky blue
-            .init(color: .appAccentDeep, location: 0.85), // slightly deeper
-            .init(color: Color(red: 0x38/255, green: 0x80/255, blue: 0xc0/255), location: 1.00), // subtle rim
-        ],
-        center: UnitPoint(x: 0.42, y: 0.36),
-        startRadius: 0,
-        endRadius: 80          // half of orb diameter (160pt)
-    )
+    private var orbGradient: RadialGradient {
+        RadialGradient(
+            stops: [
+                .init(color: theme.orbHighlight, location: 0.00), // soft diffuse highlight
+                .init(color: theme.accentLight,  location: 0.30), // light body
+                .init(color: theme.accent,        location: 0.60), // main accent
+                .init(color: theme.accentDeep,   location: 0.85), // slightly deeper
+                .init(color: theme.orbRim,        location: 1.00), // subtle rim
+            ],
+            center: UnitPoint(x: 0.42, y: 0.36),
+            startRadius: 0,
+            endRadius: 80          // half of orb diameter (160pt)
+        )
+    }
 
-    // Glow colour — rgba(137, 180, 250, …)
-    private let glowColor = Color(red: 137/255, green: 180/255, blue: 250/255)
+    @State private var yarnRotation: Double = 0
 
     var body: some View {
         VStack(spacing: 20) {
-            Circle()
-                .fill(orbGradient)
-                .frame(width: 160, height: 160)
-                // Inner glow: 60px → 30pt radius  |  expanded: 90px → 45pt
-                .shadow(color: glowColor.opacity(isExpanded ? 0.40 : 0.25),
-                        radius: isExpanded ? 45 : 30)
-                // Outer glow: 120px → 60pt radius  |  expanded: 160px → 80pt
-                .shadow(color: glowColor.opacity(isExpanded ? 0.15 : 0.08),
-                        radius: isExpanded ? 80 : 60)
-                .scaleEffect(isExpanded ? 1.2 : 1.0)
+            ZStack {
+                Circle()
+                    .fill(orbGradient)
+                    .frame(width: 160, height: 160)
+
+                if theme.yarnBall {
+                    let accent = theme.accentLight
+                    let rim    = theme.orbRim
+                    Canvas { context, size in
+                        context.clip(to: Path(ellipseIn: CGRect(origin: .zero, size: size)))
+                        let cx = size.width / 2, cy = size.height / 2
+                        let r  = size.width / 2, b  = r * 0.35
+                        for i in 0..<7 {
+                            let theta = Double(i) * .pi / 7.0 + yarnRotation * .pi / 180
+                            var path = Path()
+                            for step in 0...80 {
+                                let t = Double(step) / 80.0 * 2 * .pi
+                                let x = r * cos(t) * cos(theta) - b * sin(t) * sin(theta) + cx
+                                let y = r * cos(t) * sin(theta) + b * sin(t) * cos(theta) + cy
+                                if step == 0 { path.move(to: CGPoint(x: x, y: y)) }
+                                else         { path.addLine(to: CGPoint(x: x, y: y)) }
+                            }
+                            path.closeSubpath()
+                            let color = i % 2 == 0 ? accent.opacity(0.52) : rim.opacity(0.48)
+                            context.stroke(path, with: .color(color), lineWidth: 2.5)
+                        }
+                    }
+                    .frame(width: 160, height: 160)
+                    .allowsHitTesting(false)
+                }
+            }
+            // Inner glow: 60px → 30pt radius  |  expanded: 90px → 45pt
+            .shadow(color: theme.glowColor.opacity(isExpanded ? 0.40 : 0.25),
+                    radius: isExpanded ? 45 : 30)
+            // Outer glow: 120px → 60pt radius  |  expanded: 160px → 80pt
+            .shadow(color: theme.glowColor.opacity(isExpanded ? 0.15 : 0.08),
+                    radius: isExpanded ? 80 : 60)
+            .scaleEffect(isExpanded ? 1.2 : 1.0)
 
             Text(phase.label.uppercased())
                 .font(.system(size: 13, weight: .regular))
                 .tracking(13 * 0.18)         // letter-spacing: 0.18em
-                .foregroundColor(.appMuted)
+                .foregroundColor(theme.muted)
                 .id(phase)
                 .transition(.opacity.animation(.easeInOut(duration: 0.3)))
         }
-        .onAppear { startCycle() }
+        .onAppear { startCycle(); startYarnRotation() }
         .onDisappear { breathTask?.cancel() }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active { startCycle() } else { breathTask?.cancel(); breathTask = nil }
+            if newPhase == .active { startCycle(); startYarnRotation() }
+            else { breathTask?.cancel(); breathTask = nil }
         }
         .onChange(of: pattern) { startCycle() }
+    }
+
+    // MARK: - Yarn
+
+    private func startYarnRotation() {
+        guard theme.yarnBall else { return }
+        withAnimation(.none) { yarnRotation = 0 }
+        withAnimation(.linear(duration: 25).repeatForever(autoreverses: false)) {
+            yarnRotation = 360
+        }
     }
 
     // MARK: - Cycle
@@ -127,4 +168,5 @@ struct BreathingOrbView: View {
         Color.appBackground.ignoresSafeArea()
         BreathingOrbView()
     }
+    .environment(\.appTheme, .midnight)
 }

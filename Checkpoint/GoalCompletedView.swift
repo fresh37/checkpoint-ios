@@ -11,6 +11,7 @@ struct GoalCompletedView: View {
     let goal: HabitGoal
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.appTheme)     private var theme
     @State private var ringProgress: Double = 0
     @State private var showContent = false
     @State private var ringScale: CGFloat = 1.0
@@ -30,7 +31,7 @@ struct GoalCompletedView: View {
                     .trim(from: 0, to: ringProgress)
                     .stroke(
                         LinearGradient(
-                            colors: [.appAccent, .appAccentLight],
+                            colors: [theme.accent, theme.accentLight],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -47,13 +48,13 @@ struct GoalCompletedView: View {
             .frame(width: 120, height: 120)
             .scaleEffect(ringScale)
             .shadow(
-                color: Color.appAccent.opacity(ringGlowOpacity),
+                color: theme.accent.opacity(ringGlowOpacity),
                 radius: 20
             )
             .overlay(alignment: .center) {
                 if showParticles {
                     ParticleEmitterView()
-                        .frame(width: 220, height: 320)
+                        .frame(width: 280, height: 320)
                         .offset(y: -80)
                         .allowsHitTesting(false)
                 }
@@ -70,7 +71,7 @@ struct GoalCompletedView: View {
 
                 Text(goal.formattedTarget)
                     .font(.system(size: 22, weight: .medium, design: .rounded))
-                    .foregroundColor(.appAccent)
+                    .foregroundColor(theme.accent)
                     .padding(.top, 4)
             }
             .opacity(showContent ? 1 : 0)

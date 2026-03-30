@@ -12,7 +12,8 @@ import SwiftUI
 
 struct CreateGoalView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)      private var dismiss
+    @Environment(\.appTheme)     private var theme
 
     @State private var name = ""
     @State private var amountText = ""
@@ -20,7 +21,7 @@ struct CreateGoalView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.appBackground.ignoresSafeArea()
+                theme.background.ignoresSafeArea()
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
                         goalSection
@@ -34,17 +35,17 @@ struct CreateGoalView: View {
             }
             .navigationTitle("New Goal")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.appBackground, for: .navigationBar)
+            .toolbarBackground(theme.background, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
-                        .foregroundStyle(Color.appAccent)
+                        .foregroundStyle(theme.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create") { saveGoal() }
-                        .foregroundStyle(isValid ? Color.appAccent : Color.appTextMuted)
+                        .foregroundStyle(isValid ? theme.accent : theme.textMuted)
                         .disabled(!isValid)
                 }
             }
@@ -52,7 +53,7 @@ struct CreateGoalView: View {
         .colorScheme(.dark)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(Color.appBackground)
+        .presentationBackground(theme.background)
     }
 
     // MARK: - Sections
@@ -61,7 +62,7 @@ struct CreateGoalView: View {
         SettingsGroup(label: "What are you saving for?") {
             TextField("e.g. New running shoes", text: $name)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.appTextPrimary)
+                .foregroundStyle(theme.textPrimary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 13)
         }
@@ -72,10 +73,10 @@ struct CreateGoalView: View {
             HStack {
                 Text("$")
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.appTextMuted)
+                    .foregroundStyle(theme.textMuted)
                 TextField("0.00", text: $amountText)
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.appTextPrimary)
+                    .foregroundStyle(theme.textPrimary)
                     .keyboardType(.decimalPad)
             }
             .padding(.horizontal, 16)

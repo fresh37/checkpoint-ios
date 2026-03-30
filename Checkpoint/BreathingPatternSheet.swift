@@ -8,9 +8,6 @@
 
 import SwiftUI
 
-private let rowBackground = Color(red: 0x17/255, green: 0x24/255, blue: 0x30/255)
-private let separator     = Color(red: 0x2a/255, green: 0x38/255, blue: 0x4a/255)
-
 private let patternDescriptions: [String: String] = [
     "box":        "Focus & balance",
     "478":        "Relaxation & sleep",
@@ -21,7 +18,8 @@ private let patternDescriptions: [String: String] = [
 
 struct BreathingPatternSheet: View {
     @Binding var pattern: BreathingPattern
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)   private var dismiss
+    @Environment(\.appTheme)  private var theme
 
     // Local draft for custom pattern edits
     @State private var customDraft: BreathingPattern = .custom
@@ -30,7 +28,7 @@ struct BreathingPatternSheet: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.appBackground.ignoresSafeArea()
+                theme.background.ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -42,7 +40,7 @@ struct BreathingPatternSheet: View {
                             }
                             customRow
                         }
-                        .background(rowBackground)
+                        .background(theme.surface)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .padding(.horizontal, 20)
 
@@ -63,7 +61,7 @@ struct BreathingPatternSheet: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") { dismiss() }
                         .font(.system(size: 15, weight: .regular))
-                        .foregroundStyle(Color.appTextPrimary)
+                        .foregroundStyle(theme.textPrimary)
                 }
             }
         }
@@ -87,20 +85,20 @@ struct BreathingPatternSheet: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(p.name)
                         .font(.system(size: 15, weight: .regular))
-                        .foregroundStyle(Color.appTextPrimary)
+                        .foregroundStyle(theme.textPrimary)
                     Text(patternDescriptions[p.id] ?? "")
                         .font(.system(size: 12, weight: .regular))
-                        .foregroundStyle(Color.appMuted)
+                        .foregroundStyle(theme.muted)
                 }
                 Spacer()
                 Text(p.ratio)
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundStyle(Color.appMuted)
+                    .foregroundStyle(theme.muted)
                     .padding(.trailing, isSelected ? 8 : 0)
                 if isSelected {
                     Image(systemName: "checkmark")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color.appAccent)
+                        .foregroundStyle(theme.accent)
                 }
             }
             .padding(.horizontal, 16)
@@ -109,7 +107,7 @@ struct BreathingPatternSheet: View {
         }
         .buttonStyle(.plain)
         .overlay(alignment: .bottom) {
-            separator.frame(height: 0.5).padding(.leading, 16)
+            theme.divider.frame(height: 0.5).padding(.leading, 16)
         }
     }
 
@@ -128,25 +126,25 @@ struct BreathingPatternSheet: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Custom")
                         .font(.system(size: 15, weight: .regular))
-                        .foregroundStyle(Color.appTextPrimary)
+                        .foregroundStyle(theme.textPrimary)
                     Text(patternDescriptions["custom"] ?? "")
                         .font(.system(size: 12, weight: .regular))
-                        .foregroundStyle(Color.appMuted)
+                        .foregroundStyle(theme.muted)
                 }
                 Spacer()
                 if isSelected {
                     Text(pattern.ratio)
                         .font(.system(size: 13, weight: .regular))
-                        .foregroundStyle(Color.appMuted)
+                        .foregroundStyle(theme.muted)
                         .padding(.trailing, 8)
                     Image(systemName: "checkmark")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color.appAccent)
+                        .foregroundStyle(theme.accent)
                         .padding(.trailing, 8)
                 }
                 Image(systemName: "chevron.down")
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(Color.appMuted)
+                    .foregroundStyle(theme.muted)
                     .rotationEffect(.degrees(showCustomEditor ? 180 : 0))
                     .animation(.easeInOut(duration: 0.25), value: showCustomEditor)
             }
@@ -169,7 +167,7 @@ struct BreathingPatternSheet: View {
                 stepperRow(label: "Exhale", value: $customDraft.exhale, range: 1...12)
                 stepperRow(label: "Hold", value: $customDraft.holdOut, range: 0...12, zeroLabel: "skip", isLast: true)
             }
-            .background(rowBackground)
+            .background(theme.surface)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 20)
         }
@@ -188,28 +186,28 @@ struct BreathingPatternSheet: View {
         HStack {
             Text(label)
                 .font(.system(size: 15, weight: .regular))
-                .foregroundStyle(Color.appTextPrimary)
+                .foregroundStyle(theme.textPrimary)
             Spacer()
             if let zeroLabel, value.wrappedValue == 0 {
                 Text(zeroLabel)
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundStyle(Color.appMuted)
+                    .foregroundStyle(theme.muted)
                     .padding(.trailing, 6)
             } else {
                 Text("\(value.wrappedValue)s")
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundStyle(Color.appMuted)
+                    .foregroundStyle(theme.muted)
                     .padding(.trailing, 6)
             }
             Stepper("", value: value, in: range)
                 .labelsHidden()
-                .tint(Color.appMuted)
+                .tint(theme.muted)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .overlay(alignment: .bottom) {
             if !isLast {
-                separator.frame(height: 0.5).padding(.leading, 16)
+                theme.divider.frame(height: 0.5).padding(.leading, 16)
             }
         }
     }
@@ -221,7 +219,7 @@ struct BreathingPatternSheet: View {
             Text(title)
                 .font(.system(size: 11, weight: .regular))
                 .tracking(11 * 0.08)
-                .foregroundStyle(Color.appMuted)
+                .foregroundStyle(theme.muted)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 8)
             Spacer()

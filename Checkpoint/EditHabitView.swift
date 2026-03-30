@@ -11,7 +11,8 @@ import SwiftUI
 struct EditHabitView: View {
     let habit: Habit
 
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)  private var dismiss
+    @Environment(\.appTheme) private var theme
 
     @State private var name: String
     @State private var amountText: String
@@ -31,7 +32,7 @@ struct EditHabitView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.appBackground.ignoresSafeArea()
+                theme.background.ignoresSafeArea()
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
                         habitSection
@@ -46,17 +47,17 @@ struct EditHabitView: View {
             }
             .navigationTitle("Edit Habit")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.appBackground, for: .navigationBar)
+            .toolbarBackground(theme.background, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
-                        .foregroundStyle(Color.appAccent)
+                        .foregroundStyle(theme.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { saveEdits() }
-                        .foregroundStyle(isValid ? Color.appAccent : Color.appTextMuted)
+                        .foregroundStyle(isValid ? theme.accent : theme.textMuted)
                         .disabled(!isValid)
                 }
             }
@@ -64,7 +65,7 @@ struct EditHabitView: View {
         .colorScheme(.dark)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(Color.appBackground)
+        .presentationBackground(theme.background)
     }
 
     // MARK: - Sections
@@ -73,7 +74,7 @@ struct EditHabitView: View {
         SettingsGroup(label: "Habit") {
             TextField("e.g. Meditate 10 min", text: $name)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.appTextPrimary)
+                .foregroundStyle(theme.textPrimary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 13)
         }
@@ -84,10 +85,10 @@ struct EditHabitView: View {
             HStack {
                 Text("$")
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.appTextMuted)
+                    .foregroundStyle(theme.textMuted)
                 TextField("0.00", text: $amountText)
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.appTextPrimary)
+                    .foregroundStyle(theme.textPrimary)
                     .keyboardType(.decimalPad)
             }
             .padding(.horizontal, 16)
@@ -104,11 +105,11 @@ struct EditHabitView: View {
                     HStack {
                         Text("Think it through")
                             .font(.system(size: 17, weight: .regular))
-                            .foregroundStyle(Color.appTextPrimary)
+                            .foregroundStyle(theme.textPrimary)
                         Spacer()
                         Image(systemName: "chevron.down")
                             .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(Color.appTextMuted)
+                            .foregroundStyle(theme.textMuted)
                             .rotationEffect(.degrees(showHabitLoop ? 180 : 0))
                     }
                     .padding(.horizontal, 16)
@@ -122,13 +123,13 @@ struct EditHabitView: View {
                         Text("CUE")
                             .font(.system(size: 11, weight: .medium))
                             .tracking(1.2)
-                            .foregroundStyle(Color.appTextMuted)
+                            .foregroundStyle(theme.textMuted)
                         TextField("After I ___", text: $cueText)
                             .font(.system(size: 17, weight: .regular))
-                            .foregroundStyle(Color.appTextPrimary)
+                            .foregroundStyle(theme.textPrimary)
                         Text("The trigger that reliably precedes this habit")
                             .font(.system(size: 12, weight: .light))
-                            .foregroundStyle(Color.appTextMuted)
+                            .foregroundStyle(theme.textMuted)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 13)
@@ -139,13 +140,13 @@ struct EditHabitView: View {
                         Text("CRAVING")
                             .font(.system(size: 11, weight: .medium))
                             .tracking(1.2)
-                            .foregroundStyle(Color.appTextMuted)
+                            .foregroundStyle(theme.textMuted)
                         TextField("I want to feel ___", text: $cravingText)
                             .font(.system(size: 17, weight: .regular))
-                            .foregroundStyle(Color.appTextPrimary)
+                            .foregroundStyle(theme.textPrimary)
                         Text("The feeling or outcome that motivates this habit")
                             .font(.system(size: 12, weight: .light))
-                            .foregroundStyle(Color.appTextMuted)
+                            .foregroundStyle(theme.textMuted)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 13)
@@ -154,14 +155,14 @@ struct EditHabitView: View {
 
             Text("Optional. Mapping the cue and craving behind a habit helps it stick.")
                 .font(.system(size: 12, weight: .light))
-                .foregroundStyle(Color.appTextMuted)
+                .foregroundStyle(theme.textMuted)
                 .padding(.leading, 4)
         }
     }
 
     private var rowDivider: some View {
         Rectangle()
-            .fill(Color.appDivider)
+            .fill(theme.divider)
             .frame(height: 0.5)
             .padding(.leading, 16)
     }

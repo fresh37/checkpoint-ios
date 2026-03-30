@@ -16,6 +16,7 @@ struct HabitsView: View {
     private var activeGoals: [HabitGoal]
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.appTheme)     private var theme
 
     @State private var showCreateGoal = false
     @State private var showAddHabit = false
@@ -26,7 +27,7 @@ struct HabitsView: View {
 
     var body: some View {
         ZStack {
-            Color.appBackground
+            theme.background
                 .ignoresSafeArea()
 
             if let goal = activeGoal {
@@ -122,7 +123,7 @@ struct HabitsView: View {
                                 Button { habitToEdit = habit } label: {
                                     Image(systemName: "pencil")
                                 }
-                                .tint(Color.appAccent)
+                                .tint(theme.accent)
                             }
                     }
                     .onMove { from, to in
@@ -195,7 +196,7 @@ struct HabitsView: View {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(
                             LinearGradient(
-                                colors: [.appAccent, .appAccentDeep],
+                                colors: [theme.accent, theme.accentDeep],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -238,7 +239,7 @@ struct HabitsView: View {
                 Spacer()
                 Text("+\(habit.formattedReward)")
                     .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundColor(.appAccent)
+                    .foregroundColor(theme.accent)
             }
             .padding(.vertical, 14)
             .padding(.horizontal, 16)

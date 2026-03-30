@@ -17,6 +17,8 @@ struct SettingsDrawer: View {
     @Binding var prefs: Preferences
     @State private var draft: Preferences
     @State private var notifStatus: UNAuthorizationStatus = .notDetermined
+    @State private var showAppearance = false
+    @Environment(\.appTheme) private var theme
     @Environment(\.openURL) private var openURL
 
     init(prefs: Binding<Preferences>) {
@@ -37,10 +39,33 @@ struct SettingsDrawer: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.appBackground.ignoresSafeArea()
+                theme.background.ignoresSafeArea()
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
+
+                        // Appearance
+                        SettingsGroup(label: "Appearance") {
+                            Button {
+                                showAppearance = true
+                            } label: {
+                                HStack {
+                                    Text("Theme")
+                                        .font(.system(size: 17, weight: .regular))
+                                        .foregroundStyle(theme.textPrimary)
+                                    Spacer()
+                                    Text(AppTheme.theme(for: draft.themeID).name)
+                                        .font(.system(size: 17, weight: .regular))
+                                        .foregroundStyle(theme.textMuted)
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundStyle(theme.textMuted)
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 13)
+                            }
+                            .buttonStyle(.plain)
+                        }
 
                         // Reminders
                         SettingsGroup(label: "Reminders") {
@@ -108,14 +133,17 @@ struct SettingsDrawer: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.appBackground, for: .navigationBar)
+            .toolbarBackground(theme.background, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
         .colorScheme(.dark)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(Color.appBackground)
+        .presentationBackground(theme.background)
+        .sheet(isPresented: $showAppearance) {
+            AppearanceSheet(selectedThemeID: $draft.themeID)
+        }
         .task {
             let s = await UNUserNotificationCenter.current().notificationSettings()
             notifStatus = s.authorizationStatus
@@ -137,9 +165,9 @@ struct SettingsDrawer: View {
         Toggle(isOn: isOn) {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.appTextPrimary)
+                .foregroundStyle(theme.textPrimary)
         }
-        .tint(Color.appAccent)
+        .tint(theme.accent)
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
     }
@@ -149,7 +177,7 @@ struct SettingsDrawer: View {
         HStack {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.appTextPrimary)
+                .foregroundStyle(theme.textPrimary)
             Spacer()
             Stepper("", value: value, in: range)
                 .labelsHidden()
@@ -163,7 +191,7 @@ struct SettingsDrawer: View {
         HStack {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(Color.appTextPrimary)
+                .foregroundStyle(theme.textPrimary)
             Spacer()
             Picker("", selection: selection) {
                 ForEach(values, id: \.self) { hour in
@@ -171,7 +199,7 @@ struct SettingsDrawer: View {
                 }
             }
             .pickerStyle(.menu)
-            .tint(Color.appAccent)
+            .tint(theme.accent)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
@@ -192,12 +220,12 @@ struct SettingsDrawer: View {
                 } label: {
                     Text(dayLetter(day))
                         .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(isOn ? Color.appAccent : Color.appTextMuted)
+                        .foregroundStyle(isOn ? theme.accent : theme.textMuted)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(
                             isOn
-                                ? Color.appAccent.opacity(0.12)
+                                ? theme.accent.opacity(0.12)
                                 : Color.clear
                         )
                 }
@@ -215,7 +243,7 @@ struct SettingsDrawer: View {
 
     private var rowDivider: some View {
         Rectangle()
-            .fill(Color.appDivider)
+            .fill(theme.divider)
             .frame(height: 0.5)
             .padding(.leading, 16)
     }
@@ -229,7 +257,7 @@ struct SettingsDrawer: View {
             HStack {
                 Text(notificationsLabel)
                     .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.appTextPrimary)
+                    .foregroundStyle(theme.textPrimary)
                 Spacer()
             }
             .padding(.horizontal, 16)

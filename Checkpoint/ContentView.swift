@@ -23,6 +23,7 @@ struct ContentView: View {
                 MainTabView(prefs: $prefs, showSettings: $showSettings, showWelcome: $showWelcome)
                     .sheet(isPresented: $showSettings) {
                         SettingsDrawer(prefs: $prefs)
+                            .environment(\.appTheme, AppTheme.theme(for: prefs.themeID))
                     }
                     .onChange(of: prefs) { _, newPrefs in
                         newPrefs.save()
@@ -32,6 +33,7 @@ struct ContentView: View {
                 OnboardingView(prefs: $prefs, isComplete: $hasCompletedOnboarding, showWelcome: $showWelcome)
             }
         }
+        .environment(\.appTheme, AppTheme.theme(for: prefs.themeID))
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active, hasCompletedOnboarding {
                 NotificationScheduler.scheduleNotifications(prefs: prefs)

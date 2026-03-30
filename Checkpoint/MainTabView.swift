@@ -17,6 +17,7 @@ struct MainTabView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL)    private var openURL
+    @Environment(\.appTheme)   private var theme
 
     // Persists whether the user has opened settings at least once.
     // Gear renders at higher opacity until first visit, then recedes.
@@ -45,8 +46,12 @@ struct MainTabView: View {
 
     private var breatheContent: some View {
         ZStack {
-            Color.appBackground
+            theme.background
                 .ignoresSafeArea()
+
+            if !theme.backgroundImageNames.isEmpty {
+                KittiesBackground(imageNames: theme.backgroundImageNames)
+            }
 
             VStack(spacing: 16) {
                 BreathingOrbView(pattern: prefs.breathingPattern)
@@ -59,7 +64,7 @@ struct MainTabView: View {
                     }
                     .font(.system(size: 13, weight: .regular))
                     .tracking(13 * 0.08)
-                    .foregroundStyle(Color.appMuted)
+                    .foregroundStyle(theme.muted)
                 }
                 .buttonStyle(.plain)
             }

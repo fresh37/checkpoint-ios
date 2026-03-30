@@ -15,18 +15,16 @@ struct OnboardingView: View {
     @Binding var showWelcome: Bool
 
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.appTheme)   private var theme
 
     @State private var isRequesting = false
     @State private var isExpanded   = false
     @State private var breathTask: Task<Void, Never>?
     @State private var appeared     = false
 
-    // Glow colour — matches BreathingOrbView exactly
-    private let glowColor = Color(red: 137/255, green: 180/255, blue: 250/255)
-
     var body: some View {
         ZStack {
-            Color.appBackground
+            theme.background
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -37,11 +35,11 @@ struct OnboardingView: View {
                     .fill(
                         RadialGradient(
                             stops: [
-                                .init(color: Color(red: 0xd8/255, green: 0xec/255, blue: 0xfa/255), location: 0.00),
-                                .init(color: .appAccentLight, location: 0.30),
-                                .init(color: .appAccent, location: 0.60),
-                                .init(color: .appAccentDeep, location: 0.85),
-                                .init(color: Color(red: 0x38/255, green: 0x80/255, blue: 0xc0/255), location: 1.00),
+                                .init(color: theme.orbHighlight, location: 0.00),
+                                .init(color: theme.accentLight,  location: 0.30),
+                                .init(color: theme.accent,        location: 0.60),
+                                .init(color: theme.accentDeep,   location: 0.85),
+                                .init(color: theme.orbRim,        location: 1.00),
                             ],
                             center: UnitPoint(x: 0.42, y: 0.36),
                             startRadius: 0,
@@ -49,9 +47,9 @@ struct OnboardingView: View {
                         )
                     )
                     .frame(width: 100, height: 100)
-                    .shadow(color: glowColor.opacity(isExpanded ? 0.40 : 0.25),
+                    .shadow(color: theme.glowColor.opacity(isExpanded ? 0.40 : 0.25),
                             radius: isExpanded ? 28 : 19)
-                    .shadow(color: glowColor.opacity(isExpanded ? 0.15 : 0.08),
+                    .shadow(color: theme.glowColor.opacity(isExpanded ? 0.15 : 0.08),
                             radius: isExpanded ? 50 : 38)
                     .scaleEffect(isExpanded ? 1.2 : 1.0)
                     .opacity(appeared ? 1 : 0)
@@ -88,16 +86,16 @@ struct OnboardingView: View {
                     Group {
                         if isRequesting {
                             ProgressView()
-                                .tint(Color.appBackground)
+                                .tint(theme.background)
                         } else {
                             Text("Enable Reminders")
                                 .font(.system(size: 17, weight: .semibold))
-                                .foregroundColor(.appBackground)
+                                .foregroundColor(theme.background)
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.appAccent)
+                    .background(theme.accent)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
                 .padding(.horizontal, 32)

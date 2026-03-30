@@ -54,6 +54,7 @@ struct Preferences: Codable, Equatable {
     var meditationStartHour: Int = 9
     var meditationEndHour: Int = 21
     var activeDays: Set<Int> = Set(1...7)
+    var themeID: String = "midnight"
 
     // MARK: - Validation
 
