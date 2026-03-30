@@ -29,6 +29,7 @@ private enum BreathPhase: CaseIterable {
 
 struct BreathingOrbView: View {
     var pattern: BreathingPattern = .box
+    var isRunning: Bool = true
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.appTheme)   private var theme
@@ -112,6 +113,10 @@ struct BreathingOrbView: View {
             else { breathTask?.cancel(); breathTask = nil }
         }
         .onChange(of: pattern) { startCycle() }
+        .onChange(of: isRunning) { _, running in
+            if running { startCycle(); startYarnRotation() }
+            else { breathTask?.cancel(); breathTask = nil }
+        }
     }
 
     // MARK: - Yarn
