@@ -9,11 +9,11 @@
 import SwiftUI
 
 private let patternDescriptions: [String: String] = [
-    "box":        "Focus & balance",
-    "478":        "Relaxation & sleep",
-    "coherent":   "Heart rate balance",
+    "box": "Focus & balance",
+    "478": "Relaxation & sleep",
+    "coherent": "Heart rate balance",
     "energizing": "Alertness & energy",
-    "custom":     "Your own rhythm",
+    "custom": "Your own rhythm"
 ]
 
 struct BreathingPatternSheet: View {
@@ -75,23 +75,23 @@ struct BreathingPatternSheet: View {
 
     // MARK: - Rows
 
-    private func patternRow(_ p: BreathingPattern) -> some View {
-        let isSelected = pattern.id == p.id
+    private func patternRow(_ pat: BreathingPattern) -> some View {
+        let isSelected = pattern.id == pat.id
         return Button {
-            pattern = p
+            pattern = pat
             showCustomEditor = false
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(p.name)
+                    Text(pat.name)
                         .font(.system(size: 15, weight: .regular))
                         .foregroundStyle(theme.textPrimary)
-                    Text(patternDescriptions[p.id] ?? "")
+                    Text(patternDescriptions[pat.id] ?? "")
                         .font(.system(size: 12, weight: .regular))
                         .foregroundStyle(theme.muted)
                 }
                 Spacer()
-                Text(p.ratio)
+                Text(pat.ratio)
                     .font(.system(size: 13, weight: .regular))
                     .foregroundStyle(theme.muted)
                     .padding(.trailing, isSelected ? 8 : 0)

@@ -70,8 +70,9 @@ struct SettingsDrawer: View {
 
                         // Reminders
                         SettingsGroup(label: "Reminders") {
+                            let unit = draft.remindersPerDay == 1 ? "reminder" : "reminders"
                             stepperRow(
-                                label: "\(draft.remindersPerDay) \(draft.remindersPerDay == 1 ? "reminder" : "reminders") per day",
+                                label: "\(draft.remindersPerDay) \(unit) per day",
                                 value: $draft.remindersPerDay,
                                 range: 1...maxReminders
                             )
@@ -92,7 +93,7 @@ struct SettingsDrawer: View {
 
                         // Categories
                         SettingsGroup(label: "Categories") {
-                            toggleRow(label: "Gratitude",      isOn: $draft.gratitude)
+                            toggleRow(label: "Gratitude", isOn: $draft.gratitude)
                             rowDivider
                             toggleRow(label: "Body Awareness", isOn: $draft.bodyAwareness)
                             rowDivider
@@ -176,8 +177,8 @@ struct SettingsDrawer: View {
             .environment(\.appTheme, AppTheme.theme(for: draft.themeID))
         }
         .task {
-            let s = await UNUserNotificationCenter.current().notificationSettings()
-            notifStatus = s.authorizationStatus
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            notifStatus = settings.authorizationStatus
         }
         // Validate and sync to parent binding on every draft change.
         .onChange(of: draft) { _, _ in
@@ -189,10 +190,13 @@ struct SettingsDrawer: View {
         }
     }
 
-    // MARK: - Row types
+}
 
+// MARK: - Row helpers
+
+private extension SettingsDrawer {
     @ViewBuilder
-    private func toggleRow(label: String, isOn: Binding<Bool>) -> some View {
+    func toggleRow(label: String, isOn: Binding<Bool>) -> some View {
         Toggle(isOn: isOn) {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
@@ -204,7 +208,7 @@ struct SettingsDrawer: View {
     }
 
     @ViewBuilder
-    private func stepperRow(label: String, value: Binding<Int>, range: ClosedRange<Int>) -> some View {
+    func stepperRow(label: String, value: Binding<Int>, range: ClosedRange<Int>) -> some View {
         HStack {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
@@ -218,7 +222,7 @@ struct SettingsDrawer: View {
     }
 
     @ViewBuilder
-    private func pickerRow(label: String, selection: Binding<Int>, values: [Int]) -> some View {
+    func pickerRow(label: String, selection: Binding<Int>, values: [Int]) -> some View {
         HStack {
             Text(label)
                 .font(.system(size: 17, weight: .regular))
@@ -236,9 +240,7 @@ struct SettingsDrawer: View {
         .padding(.vertical, 11)
     }
 
-    // MARK: - Days row
-
-    private var daysRow: some View {
+    var daysRow: some View {
         HStack(spacing: 0) {
             ForEach([1, 2, 3, 4, 5, 6, 7], id: \.self) { day in
                 let isOn = draft.activeDays.contains(day)
@@ -254,11 +256,7 @@ struct SettingsDrawer: View {
                         .foregroundStyle(isOn ? theme.accent : theme.textMuted)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(
-                            isOn
-                                ? theme.accent.opacity(0.12)
-                                : Color.clear
-                        )
+                        .background(isOn ? theme.accent.opacity(0.12) : Color.clear)
                 }
                 .buttonStyle(.plain)
                 .animation(.easeInOut(duration: 0.15), value: isOn)
@@ -266,22 +264,18 @@ struct SettingsDrawer: View {
         }
     }
 
-    private func dayLetter(_ weekday: Int) -> String {
+    func dayLetter(_ weekday: Int) -> String {
         ["S", "M", "T", "W", "T", "F", "S"][weekday - 1]
     }
 
-    // MARK: - Divider
-
-    private var rowDivider: some View {
+    var rowDivider: some View {
         Rectangle()
             .fill(theme.divider)
             .frame(height: 0.5)
             .padding(.leading, 16)
     }
 
-    // MARK: - Notifications row
-
-    private var notificationsRow: some View {
+    var notificationsRow: some View {
         Button {
             handleNotificationsTap()
         } label: {
@@ -297,7 +291,7 @@ struct SettingsDrawer: View {
         .buttonStyle(.plain)
     }
 
-    private var notificationsLabel: String {
+    var notificationsLabel: String {
         switch notifStatus {
         case .authorized, .provisional, .ephemeral:
             return draft.notificationsEnabled ? "Disable Notifications" : "Enable Notifications"
@@ -306,7 +300,7 @@ struct SettingsDrawer: View {
         }
     }
 
-    private func handleNotificationsTap() {
+    func handleNotificationsTap() {
         switch notifStatus {
         case .authorized, .provisional, .ephemeral:
             draft.notificationsEnabled.toggle()
@@ -316,7 +310,8 @@ struct SettingsDrawer: View {
             }
         default: // .notDetermined
             Task {
-                let granted = (try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+                let granted = (try? await UNUserNotificationCenter.current()
+                    .requestAuthorization(options: [.alert, .sound, .badge])) ?? false
                 notifStatus = granted ? .authorized : .denied
                 if granted {
                     draft.notificationsEnabled = true
@@ -325,17 +320,15 @@ struct SettingsDrawer: View {
         }
     }
 
-    // MARK: - Helpers
-
-    private func hourLabel(_ hour: Int) -> String {
+    func hourLabel(_ hour: Int) -> String {
         switch hour {
         case 0:  return "12 AM"
         case 12: return "12 PM"
         case 24: return "12 AM"
         default:
             let suffix = hour < 12 ? "AM" : "PM"
-            let h = hour > 12 ? hour - 12 : hour
-            return "\(h) \(suffix)"
+            let displayHour = hour > 12 ? hour - 12 : hour
+            return "\(displayHour) \(suffix)"
         }
     }
 }

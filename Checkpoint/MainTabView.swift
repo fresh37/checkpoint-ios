@@ -34,9 +34,9 @@ struct MainTabView: View {
     // MARK: - Session state
     @State private var sessionActive = false
     @State private var sessionRemainingSeconds = 0
-    @State private var sessionBellIntervalSeconds: Int? = nil
-    @State private var sessionPatternOverride: BreathingPattern? = nil
-    @State private var sessionTask: Task<Void, Never>? = nil
+    @State private var sessionBellIntervalSeconds: Int?
+    @State private var sessionPatternOverride: BreathingPattern?
+    @State private var sessionTask: Task<Void, Never>?
     @State private var secondsSinceLastBell = 0
 
     var body: some View {
@@ -206,7 +206,8 @@ struct MainTabView: View {
     // MARK: - Session
 
     private var activePattern: BreathingPattern {
-        (sessionActive || sessionPatternOverride != nil) ? (sessionPatternOverride ?? prefs.breathingPattern) : prefs.breathingPattern
+        guard sessionActive || sessionPatternOverride != nil else { return prefs.breathingPattern }
+        return sessionPatternOverride ?? prefs.breathingPattern
     }
 
     /// Orb runs normally, or runs during an active session, but stops briefly at session end.
@@ -218,9 +219,9 @@ struct MainTabView: View {
     }
 
     private var formattedCountdown: String {
-        let m = sessionRemainingSeconds / 60
-        let s = sessionRemainingSeconds % 60
-        return String(format: "%d:%02d", m, s)
+        let minutes = sessionRemainingSeconds / 60
+        let seconds = sessionRemainingSeconds % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
 
     private func startSession(durationSeconds: Int, bellIntervalSeconds: Int?, pattern: BreathingPattern) {

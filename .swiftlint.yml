@@ -1,0 +1,20 @@
+disabled_rules:
+  - trailing_whitespace   # noisy in early dev
+
+opt_in_rules:
+  - empty_count
+  - force_unwrapping      # good discipline for iOS
+
+excluded:
+  - Pods
+  - .build
+  - .claude
+
+line_length: 120
+
+identifier_name:
+  excluded:
+    - id
+    - db
+
+reporter: "xcode"   # shows violations inline in Xcode

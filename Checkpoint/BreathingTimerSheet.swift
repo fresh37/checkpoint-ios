@@ -19,11 +19,11 @@ struct BreathingTimerSheet: View {
     // MARK: - Duration
 
     private let durationOptions: [(label: String, minutes: Int)] = [
-        ("5 min",  5),
+        ("5 min", 5),
         ("10 min", 10),
         ("15 min", 15),
         ("20 min", 20),
-        ("30 min", 30),
+        ("30 min", 30)
     ]
 
     @State private var selectedMinutes = 10
@@ -33,10 +33,10 @@ struct BreathingTimerSheet: View {
     // MARK: - Interval Bells
 
     private let bellOptions: [(label: String, minutes: Int)] = [
-        ("Every 1 min",  1),
-        ("Every 2 min",  2),
-        ("Every 5 min",  5),
-        ("Every 10 min", 10),
+        ("Every 1 min", 1),
+        ("Every 2 min", 2),
+        ("Every 5 min", 5),
+        ("Every 10 min", 10)
     ]
 
     @State private var bellsEnabled = false
@@ -48,8 +48,10 @@ struct BreathingTimerSheet: View {
     @State private var showCustomEditor = false
     @State private var customDraft: BreathingPattern = .custom
 
-    init(initialPattern: BreathingPattern,
-         onStart: @escaping (_ durationSeconds: Int, _ bellIntervalSeconds: Int?, _ pattern: BreathingPattern) -> Void) {
+    init(
+        initialPattern: BreathingPattern,
+        onStart: @escaping (_ durationSeconds: Int, _ bellIntervalSeconds: Int?, _ pattern: BreathingPattern) -> Void
+    ) {
         self.initialPattern = initialPattern
         self.onStart = onStart
         _localPattern = State(initialValue: initialPattern)
@@ -70,8 +72,8 @@ struct BreathingTimerSheet: View {
                         sectionHeader("DURATION")
 
                         VStack(spacing: 0) {
-                            ForEach(durationOptions.indices, id: \.self) { i in
-                                let opt = durationOptions[i]
+                            ForEach(durationOptions.indices, id: \.self) { index in
+                                let opt = durationOptions[index]
                                 let isSelected = !useCustomDuration && selectedMinutes == opt.minutes
                                 durationRow(label: opt.label, isSelected: isSelected) {
                                     useCustomDuration = false
@@ -109,10 +111,10 @@ struct BreathingTimerSheet: View {
                             }
 
                             if bellsEnabled {
-                                ForEach(bellOptions.indices, id: \.self) { i in
-                                    let opt = bellOptions[i]
+                                ForEach(bellOptions.indices, id: \.self) { index in
+                                    let opt = bellOptions[index]
                                     let isSelected = bellIntervalMinutes == opt.minutes
-                                    let isLast = i == bellOptions.count - 1
+                                    let isLast = index == bellOptions.count - 1
                                     durationRow(
                                         label: opt.label,
                                         isSelected: isSelected,
@@ -184,7 +186,9 @@ struct BreathingTimerSheet: View {
 
     // MARK: - Duration Rows
 
-    private func durationRow(label: String, isSelected: Bool, isLast: Bool = false, action: @escaping () -> Void) -> some View {
+    private func durationRow(
+        label: String, isSelected: Bool, isLast: Bool = false, action: @escaping () -> Void
+    ) -> some View {
         Button(action: action) {
             HStack {
                 Text(label)
@@ -239,25 +243,23 @@ struct BreathingTimerSheet: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - Pattern Rows
-
-    private func patternRow(_ p: BreathingPattern) -> some View {
-        let isSelected = localPattern.id == p.id
+    private func patternRow(_ pattern: BreathingPattern) -> some View {
+        let isSelected = localPattern.id == pattern.id
         return Button {
-            localPattern = p
+            localPattern = pattern
             showCustomEditor = false
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(p.name)
+                    Text(pattern.name)
                         .font(.system(size: 15, weight: .regular))
                         .foregroundStyle(theme.textPrimary)
-                    Text(patternDescription(for: p.id))
+                    Text(patternDescription(for: pattern.id))
                         .font(.system(size: 12, weight: .regular))
                         .foregroundStyle(theme.muted)
                 }
                 Spacer()
-                Text(p.ratio)
+                Text(pattern.ratio)
                     .font(.system(size: 13, weight: .regular))
                     .foregroundStyle(theme.muted)
                     .padding(.trailing, isSelected ? 8 : 0)
@@ -276,8 +278,10 @@ struct BreathingTimerSheet: View {
             theme.divider.frame(height: 0.5).padding(.leading, 16)
         }
     }
+}
 
-    private var customPatternRow: some View {
+private extension BreathingTimerSheet {
+    var customPatternRow: some View {
         let isSelected = localPattern.id == "custom"
         return Button {
             if !isSelected { localPattern = customDraft }
@@ -316,28 +320,23 @@ struct BreathingTimerSheet: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - Custom Timing Editor
-
-    private var timingSection: some View {
+    var timingSection: some View {
         VStack(spacing: 0) {
             sectionHeader("TIMING")
-
             VStack(spacing: 0) {
                 stepperRow(label: "Inhale", value: $customDraft.inhale, range: 1...12)
-                stepperRow(label: "Hold",   value: $customDraft.holdIn,  range: 0...12, zeroLabel: "skip")
-                stepperRow(label: "Exhale", value: $customDraft.exhale,  range: 1...12)
-                stepperRow(label: "Hold",   value: $customDraft.holdOut, range: 0...12, zeroLabel: "skip", isLast: true)
+                stepperRow(label: "Hold", value: $customDraft.holdIn, range: 0...12, zeroLabel: "skip")
+                stepperRow(label: "Exhale", value: $customDraft.exhale, range: 1...12)
+                stepperRow(label: "Hold", value: $customDraft.holdOut, range: 0...12, zeroLabel: "skip", isLast: true)
             }
             .background(theme.surface)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 20)
         }
-        .onChange(of: customDraft) {
-            localPattern = customDraft
-        }
+        .onChange(of: customDraft) { localPattern = customDraft }
     }
 
-    private func stepperRow(
+    func stepperRow(
         label: String,
         value: Binding<Int>,
         range: ClosedRange<Int>,
@@ -373,9 +372,7 @@ struct BreathingTimerSheet: View {
         }
     }
 
-    // MARK: - Section Header
-
-    private func sectionHeader(_ title: String) -> some View {
+    func sectionHeader(_ title: String) -> some View {
         HStack {
             Text(title)
                 .font(.system(size: 11, weight: .regular))
@@ -386,10 +383,7 @@ struct BreathingTimerSheet: View {
             Spacer()
         }
     }
-
-    // MARK: - Helpers
-
-    private func patternDescription(for id: String) -> String {
+    func patternDescription(for id: String) -> String {
         switch id {
         case "box":        return "Focus & balance"
         case "478":        return "Relaxation & sleep"

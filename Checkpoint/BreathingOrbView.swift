@@ -45,10 +45,10 @@ struct BreathingOrbView: View {
         RadialGradient(
             stops: [
                 .init(color: theme.orbHighlight, location: 0.00), // soft diffuse highlight
-                .init(color: theme.accentLight,  location: 0.30), // light body
-                .init(color: theme.accent,        location: 0.60), // main accent
-                .init(color: theme.accentDeep,   location: 0.85), // slightly deeper
-                .init(color: theme.orbRim,        location: 1.00), // subtle rim
+                .init(color: theme.accentLight, location: 0.30), // light body
+                .init(color: theme.accent, location: 0.60), // main accent
+                .init(color: theme.accentDeep, location: 0.85), // slightly deeper
+                .init(color: theme.orbRim, location: 1.00) // subtle rim
             ],
             center: UnitPoint(x: 0.42, y: 0.36),
             startRadius: 0,
@@ -94,13 +94,11 @@ struct BreathingOrbView: View {
         .onAppear { startCycle(); startYarnRotation() }
         .onDisappear { breathTask?.cancel() }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active { startCycle(); startYarnRotation() }
-            else { breathTask?.cancel(); breathTask = nil }
+            if newPhase == .active { startCycle(); startYarnRotation() } else { breathTask?.cancel(); breathTask = nil }
         }
         .onChange(of: pattern) { startCycle() }
         .onChange(of: isRunning) { _, running in
-            if running { startCycle(); startYarnRotation() }
-            else { breathTask?.cancel(); breathTask = nil }
+            if running { startCycle(); startYarnRotation() } else { breathTask?.cancel(); breathTask = nil }
         }
     }
 

@@ -108,9 +108,9 @@ struct CreateGoalView: View {
         )
         if let previousGoal = try? modelContext.fetch(descriptor).first {
             let sorted = previousGoal.habits.sorted { $0.order < $1.order }
-            for (i, habit) in sorted.enumerated() {
+            for (index, habit) in sorted.enumerated() {
                 let clone = Habit(name: habit.name, rewardCents: habit.rewardCents, goal: goal)
-                clone.order = i
+                clone.order = index
                 modelContext.insert(clone)
             }
         }

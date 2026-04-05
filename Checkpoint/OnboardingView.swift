@@ -36,10 +36,10 @@ struct OnboardingView: View {
                         RadialGradient(
                             stops: [
                                 .init(color: theme.orbHighlight, location: 0.00),
-                                .init(color: theme.accentLight,  location: 0.30),
-                                .init(color: theme.accent,        location: 0.60),
-                                .init(color: theme.accentDeep,   location: 0.85),
-                                .init(color: theme.orbRim,        location: 1.00),
+                                .init(color: theme.accentLight, location: 0.30),
+                                .init(color: theme.accent, location: 0.60),
+                                .init(color: theme.accentDeep, location: 0.85),
+                                .init(color: theme.orbRim, location: 1.00)
                             ],
                             center: UnitPoint(x: 0.42, y: 0.36),
                             startRadius: 0,
@@ -153,7 +153,8 @@ struct OnboardingView: View {
     private func requestPermissionAndFinish() {
         isRequesting = true
         Task {
-            let granted = (try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+            let granted = (try? await UNUserNotificationCenter.current()
+                .requestAuthorization(options: [.alert, .sound, .badge])) ?? false
             if granted {
                 NotificationScheduler.scheduleNotifications(prefs: prefs)
                 showWelcome = true

@@ -17,7 +17,7 @@ struct KittiesBackground: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                if imageNames.count > 0 {
+                if !imageNames.isEmpty {
                     Image(imageNames[0])
                         .resizable()
                         .aspectRatio(contentMode: .fill)

@@ -27,19 +27,19 @@ struct ParticleEmitterView: View {
 
     var body: some View {
         GeometryReader { geo in
-            let cx = geo.size.width / 2
-            let cy = geo.size.height / 2
+            let centerX = geo.size.width / 2
+            let centerY = geo.size.height / 2
 
-            ForEach(particles) { p in
+            ForEach(particles) { particle in
                 Circle()
-                    .fill(p.color.opacity(animate ? 0 : p.opacity))
-                    .frame(width: p.diameter, height: p.diameter)
+                    .fill(particle.color.opacity(animate ? 0 : particle.opacity))
+                    .frame(width: particle.diameter, height: particle.diameter)
                     .position(
-                        x: cx + p.startX + (animate ? p.endX : 0),
-                        y: cy + p.startY + (animate ? p.endY : 0)
+                        x: centerX + particle.startX + (animate ? particle.endX : 0),
+                        y: centerY + particle.startY + (animate ? particle.endY : 0)
                     )
                     .animation(
-                        .easeOut(duration: p.duration).delay(p.delay),
+                        .easeOut(duration: particle.duration).delay(particle.delay),
                         value: animate
                     )
             }

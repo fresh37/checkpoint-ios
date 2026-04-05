@@ -30,9 +30,9 @@ enum NotificationScheduler {
         breaks.sort()
 
         var cursor = 0.0
-        return breaks.enumerated().map { i, b in
-            let gap     = i == 0 ? 0.0 : Double(minGap)
-            let segment = b - (i == 0 ? 0.0 : breaks[i - 1])
+        return breaks.enumerated().map { index, breakPoint in
+            let gap     = index == 0 ? 0.0 : Double(minGap)
+            let segment = breakPoint - (index == 0 ? 0.0 : breaks[index - 1])
             cursor += gap + segment
             return Int(cursor.rounded())
         }
@@ -50,9 +50,9 @@ enum NotificationScheduler {
 
     static func buildMessagePool(prefs: Preferences, count: Int) -> [String] {
         var buckets: [String: [String]] = [
-            "gratitude":     MessagePool.gratitude,
+            "gratitude": MessagePool.gratitude,
             "bodyAwareness": MessagePool.bodyAwareness,
-            "presentMoment": MessagePool.presentMoment,
+            "presentMoment": MessagePool.presentMoment
         ]
 
         if prefs.customMessagesEnabled, !prefs.customMessages.isEmpty {
@@ -60,7 +60,7 @@ enum NotificationScheduler {
         }
 
         var active: [String] = []
-        if prefs.gratitude     { active.append("gratitude") }
+        if prefs.gratitude { active.append("gratitude") }
         if prefs.bodyAwareness { active.append("bodyAwareness") }
         if prefs.presentMoment { active.append("presentMoment") }
         if prefs.customMessagesEnabled, !prefs.customMessages.isEmpty {
@@ -106,86 +106,100 @@ enum NotificationScheduler {
         let settings = await center.notificationSettings()
         guard settings.authorizationStatus == .authorized else { return }
 
-        let pending   = await center.pendingNotificationRequests()
+        let pending = await center.pendingNotificationRequests()
         let checkpointIds = pending.map(\.identifier).filter { $0.hasPrefix("checkpoint.") }
         center.removePendingNotificationRequests(withIdentifiers: checkpointIds)
 
-        let calendar      = Calendar.current
-        let today         = calendar.startOfDay(for: Date())
+        let calendar = Calendar.current
+        let today    = calendar.startOfDay(for: Date())
+        var count    = await scheduleDailyNotifications(
+            prefs: prefs, center: center, calendar: calendar, today: today)
+
+        if prefs.meditationEnabled && count < 60 {
+            count = await scheduleMeditationNotifications(
+                prefs: prefs, center: center, calendar: calendar, today: today, startCount: count)
+        }
+    }
+
+    private static func scheduleDailyNotifications(
+        prefs: Preferences,
+        center: UNUserNotificationCenter,
+        calendar: Calendar,
+        today: Date
+    ) async -> Int {
         let windowMinutes = (prefs.endHour - prefs.startHour) * 60
         var requestCount  = 0
 
         outer: for dayOffset in 0..<6 {
-            guard let dayStart = calendar.date(
-                byAdding: .day, value: dayOffset, to: today
-            ) else { continue }
-
+            guard let dayStart = calendar.date(byAdding: .day, value: dayOffset, to: today) else { continue }
             let weekday = calendar.component(.weekday, from: dayStart)
             guard prefs.activeDays.contains(weekday) else { continue }
 
             let offsets  = generateOffsets(count: prefs.remindersPerDay, windowMinutes: windowMinutes)
             let messages = buildMessagePool(prefs: prefs, count: prefs.remindersPerDay)
 
-            for (i, offsetMinutes) in offsets.enumerated() {
+            for (index, offsetMinutes) in offsets.enumerated() {
                 let fireMinute = prefs.startHour * 60 + offsetMinutes
                 guard let fireDate = calendar.date(
                     byAdding: .minute, value: fireMinute, to: dayStart
                 ) else { continue }
-
                 if fireDate <= Date() { continue }
 
-                let components = calendar.dateComponents(
-                    [.year, .month, .day, .hour, .minute], from: fireDate
-                )
-                let trigger = UNCalendarNotificationTrigger(
-                    dateMatching: components, repeats: false
-                )
-
-                let content = UNMutableNotificationContent()
-                content.body  = messages[i % messages.count]
-                content.sound = .default
-                if prefs.hapticFeedback {
-                    content.interruptionLevel = .active
-                }
+                let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
+                let trigger    = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+                let content    = UNMutableNotificationContent()
+                content.body   = messages[index % messages.count]
+                content.sound  = .default
+                if prefs.hapticFeedback { content.interruptionLevel = .active }
 
                 let request = UNNotificationRequest(
-                    identifier: "checkpoint.\(dayOffset).\(i).\(UUID().uuidString)",
-                    content: content,
-                    trigger: trigger
-                )
+                    identifier: "checkpoint.\(dayOffset).\(index).\(UUID().uuidString)",
+                    content: content, trigger: trigger)
                 try? await center.add(request)
-
                 requestCount += 1
                 if requestCount >= 60 { break outer }
             }
         }
+        return requestCount
+    }
 
-        if prefs.meditationEnabled {
-            let medWindow = (prefs.meditationEndHour - prefs.meditationStartHour) * 60
-            medOuter: for dayOffset in 0..<6 {
-                guard let dayStart = calendar.date(byAdding: .day, value: dayOffset, to: today) else { continue }
-                let offsets  = generateOffsets(count: prefs.meditationRemindersPerDay, windowMinutes: medWindow)
-                let messages = buildMeditationPool(count: prefs.meditationRemindersPerDay)
-                for (i, offsetMinutes) in offsets.enumerated() {
-                    let fireMinute = prefs.meditationStartHour * 60 + offsetMinutes
-                    guard let fireDate = calendar.date(byAdding: .minute, value: fireMinute, to: dayStart) else { continue }
-                    if fireDate <= Date() { continue }
-                    let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
-                    let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-                    let content = UNMutableNotificationContent()
-                    content.body = messages[i % messages.count]
-                    content.sound = .default
-                    if prefs.hapticFeedback { content.interruptionLevel = .active }
-                    let request = UNNotificationRequest(
-                        identifier: "checkpoint.med.\(dayOffset).\(i).\(UUID().uuidString)",
-                        content: content,
-                        trigger: trigger
-                    )
-                    try? await center.add(request)
-                    requestCount += 1
-                    if requestCount >= 60 { break medOuter }
-                }
+    private static func scheduleMeditationNotifications(
+        prefs: Preferences,
+        center: UNUserNotificationCenter,
+        calendar: Calendar,
+        today: Date,
+        startCount: Int
+    ) async -> Int {
+        let medWindow = (prefs.meditationEndHour - prefs.meditationStartHour) * 60
+        var requestCount = startCount
+
+        medOuter: for dayOffset in 0..<6 {
+            guard let dayStart = calendar.date(byAdding: .day, value: dayOffset, to: today) else { continue }
+            let offsets  = generateOffsets(count: prefs.meditationRemindersPerDay, windowMinutes: medWindow)
+            let messages = buildMeditationPool(count: prefs.meditationRemindersPerDay)
+
+            for (index, offsetMinutes) in offsets.enumerated() {
+                let fireMinute = prefs.meditationStartHour * 60 + offsetMinutes
+                guard let fireDate = calendar.date(
+                    byAdding: .minute, value: fireMinute, to: dayStart
+                ) else { continue }
+                if fireDate <= Date() { continue }
+
+                let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
+                let trigger    = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+                let content    = UNMutableNotificationContent()
+                content.body   = messages[index % messages.count]
+                content.sound  = .default
+                if prefs.hapticFeedback { content.interruptionLevel = .active }
+
+                let request = UNNotificationRequest(
+                    identifier: "checkpoint.med.\(dayOffset).\(index).\(UUID().uuidString)",
+                    content: content, trigger: trigger)
+                try? await center.add(request)
+                requestCount += 1
+                if requestCount >= 60 { break medOuter }
             }
         }
+        return requestCount
     }
 }

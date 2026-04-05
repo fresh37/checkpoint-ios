@@ -23,10 +23,13 @@ struct BreathingPattern: Codable, Equatable {
         return parts.filter { $0 > 0 }.map { "\($0)" }.joined(separator: "-")
     }
 
-    static let box         = BreathingPattern(id: "box",        name: "Box",        inhale: 4, holdIn: 4, exhale: 4, holdOut: 4)
-    static let relaxing478 = BreathingPattern(id: "478",        name: "4-7-8",      inhale: 4, holdIn: 7, exhale: 8, holdOut: 0)
-    static let coherent    = BreathingPattern(id: "coherent",   name: "Coherent",   inhale: 5, holdIn: 0, exhale: 5, holdOut: 0)
-    static let energizing  = BreathingPattern(id: "energizing", name: "Energizing", inhale: 6, holdIn: 2, exhale: 2, holdOut: 0)
+    static let box         = BreathingPattern(id: "box", name: "Box", inhale: 4, holdIn: 4, exhale: 4, holdOut: 4)
+    static let relaxing478 = BreathingPattern(
+        id: "478", name: "4-7-8", inhale: 4, holdIn: 7, exhale: 8, holdOut: 0)
+    static let coherent    = BreathingPattern(
+        id: "coherent", name: "Coherent", inhale: 5, holdIn: 0, exhale: 5, holdOut: 0)
+    static let energizing  = BreathingPattern(
+        id: "energizing", name: "Energizing", inhale: 6, holdIn: 2, exhale: 2, holdOut: 0)
 
     static let presets: [BreathingPattern] = [.box, .relaxing478, .coherent, .energizing]
 
@@ -82,25 +85,25 @@ struct Preferences: Codable, Equatable {
     /// Returns a validated copy, falling back to defaults for any field that
     /// would make the struct invalid.
     func validated() -> Preferences {
-        var p = self
-        if !(1...50).contains(p.remindersPerDay) { p.remindersPerDay = 3 }
-        if !(5...23).contains(p.startHour)       { p.startHour = 9 }
-        if !(6...24).contains(p.endHour)         { p.endHour = 21 }
-        if p.endHour <= p.startHour              { p.endHour = p.startHour + 1 }
-        let windowMinutes = (p.endHour - p.startHour) * 60
-        while windowMinutes / p.remindersPerDay < 15, p.remindersPerDay > 1 {
-            p.remindersPerDay -= 1
+        var copy = self
+        if !(1...50).contains(copy.remindersPerDay) { copy.remindersPerDay = 3 }
+        if !(5...23).contains(copy.startHour) { copy.startHour = 9 }
+        if !(6...24).contains(copy.endHour) { copy.endHour = 21 }
+        if copy.endHour <= copy.startHour { copy.endHour = copy.startHour + 1 }
+        let windowMinutes = (copy.endHour - copy.startHour) * 60
+        while windowMinutes / copy.remindersPerDay < 15, copy.remindersPerDay > 1 {
+            copy.remindersPerDay -= 1
         }
-        if p.activeDays.isEmpty { p.activeDays = Set(1...7) }
-        if p.meditationEnabled {
-            let medOk = (1...50).contains(p.meditationRemindersPerDay)
-                && (0...23).contains(p.meditationStartHour)
-                && (1...24).contains(p.meditationEndHour)
-                && p.meditationEndHour > p.meditationStartHour
-                && (p.meditationEndHour - p.meditationStartHour) * 60 / p.meditationRemindersPerDay >= 15
-            if !medOk { p.meditationEnabled = false }
+        if copy.activeDays.isEmpty { copy.activeDays = Set(1...7) }
+        if copy.meditationEnabled {
+            let medOk = (1...50).contains(copy.meditationRemindersPerDay)
+                && (0...23).contains(copy.meditationStartHour)
+                && (1...24).contains(copy.meditationEndHour)
+                && copy.meditationEndHour > copy.meditationStartHour
+                && (copy.meditationEndHour - copy.meditationStartHour) * 60 / copy.meditationRemindersPerDay >= 15
+            if !medOk { copy.meditationEnabled = false }
         }
-        return p
+        return copy
     }
 }
 

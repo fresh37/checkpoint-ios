@@ -66,10 +66,10 @@ private struct ThemeCard: View {
         RadialGradient(
             stops: [
                 .init(color: theme.orbHighlight, location: 0.00),
-                .init(color: theme.accentLight,  location: 0.30),
-                .init(color: theme.accent,        location: 0.62),
-                .init(color: theme.accentDeep,   location: 0.85),
-                .init(color: theme.orbRim,        location: 1.00),
+                .init(color: theme.accentLight, location: 0.30),
+                .init(color: theme.accent, location: 0.62),
+                .init(color: theme.accentDeep, location: 0.85),
+                .init(color: theme.orbRim, location: 1.00)
             ],
             center: UnitPoint(x: 0.42, y: 0.36),
             startRadius: 0,

@@ -21,7 +21,7 @@ struct HabitsView: View {
     @State private var showCreateGoal = false
     @State private var showAddHabit = false
     @State private var showResetConfirmation = false
-    @State private var habitToEdit: Habit? = nil
+    @State private var habitToEdit: Habit?
 
     private var activeGoal: HabitGoal? { activeGoals.first }
 
@@ -90,94 +90,94 @@ struct HabitsView: View {
 
     private func activeGoalContent(_ goal: HabitGoal) -> some View {
         VStack(spacing: 0) {
-            // Progress card
             progressCard(goal)
                 .padding(.horizontal, 20)
                 .padding(.top, 24)
+            habitListContent(goal)
+            goalBottomButtons(goal)
+        }
+    }
 
-            // Habit list
-            if goal.habits.isEmpty {
-                Spacer()
-                Text("Add your first habit below.")
-                    .font(.system(size: 15, weight: .light))
-                    .foregroundColor(.white.opacity(0.4))
-                Spacer()
-            } else {
-                List {
-                    ForEach(sorted(goal.habits)) { habit in
-                        habitRow(habit, goal: goal)
-                            .listRowBackground(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.white.opacity(0.05))
-                                    .padding(.vertical, 0.5)
-                            )
-                            .listRowInsets(EdgeInsets(top: 0.5, leading: 20, bottom: 0.5, trailing: 20))
-                            .listRowSeparator(.hidden)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    modelContext.delete(habit)
-                                    renumberOrder(goal: goal)
-                                } label: {
-                                    Image(systemName: "trash")
-                                }
-                                Button { habitToEdit = habit } label: {
-                                    Image(systemName: "pencil")
-                                }
-                                .tint(theme.accent)
+    @ViewBuilder
+    private func habitListContent(_ goal: HabitGoal) -> some View {
+        if goal.habits.isEmpty {
+            Spacer()
+            Text("Add your first habit below.")
+                .font(.system(size: 15, weight: .light))
+                .foregroundColor(.white.opacity(0.4))
+            Spacer()
+        } else {
+            List {
+                ForEach(sorted(goal.habits)) { habit in
+                    habitRow(habit, goal: goal)
+                        .listRowBackground(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.white.opacity(0.05))
+                                .padding(.vertical, 0.5)
+                        )
+                        .listRowInsets(EdgeInsets(top: 0.5, leading: 20, bottom: 0.5, trailing: 20))
+                        .listRowSeparator(.hidden)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                modelContext.delete(habit)
+                                renumberOrder(goal: goal)
+                            } label: {
+                                Image(systemName: "trash")
                             }
-                    }
-                    .onMove { from, to in
-                        var reordered = sorted(goal.habits)
-                        reordered.move(fromOffsets: from, toOffset: to)
-                        for (i, h) in reordered.enumerated() { h.order = i }
-                    }
-                }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .padding(.top, 16)
-            }
-
-            // Bottom buttons
-            VStack(spacing: 12) {
-                Button {
-                    showAddHabit = true
-                } label: {
-                    Label("Add Habit", systemImage: "plus")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(.white.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-
-                HStack {
-                    Button("Reset Goal") {
-                        showResetConfirmation = true
-                    }
-                    Spacer()
-                    Button("Undo") {
-                        if let c = mostRecentCompletion(for: goal) {
-                            modelContext.delete(c)
+                            Button { habitToEdit = habit } label: {
+                                Image(systemName: "pencil")
+                            }
+                            .tint(theme.accent)
                         }
+                }
+                .onMove { from, destination in
+                    var reordered = sorted(goal.habits)
+                    reordered.move(fromOffsets: from, toOffset: destination)
+                    for (index, habit) in reordered.enumerated() { habit.order = index }
+                }
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .padding(.top, 16)
+        }
+    }
+
+    private func goalBottomButtons(_ goal: HabitGoal) -> some View {
+        VStack(spacing: 12) {
+            Button {
+                showAddHabit = true
+            } label: {
+                Label("Add Habit", systemImage: "plus")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(.white.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+
+            HStack {
+                Button("Reset Goal") { showResetConfirmation = true }
+                Spacer()
+                Button("Undo") {
+                    if let completion = mostRecentCompletion(for: goal) {
+                        modelContext.delete(completion)
                     }
-                    .disabled(goal.habits.flatMap(\.completions).isEmpty)
                 }
-                .font(.system(size: 14))
-                .foregroundColor(.white.opacity(0.25))
-                .padding(.horizontal, 20)
+                .disabled(goal.habits.flatMap(\.completions).isEmpty)
             }
+            .font(.system(size: 14))
+            .foregroundColor(.white.opacity(0.25))
             .padding(.horizontal, 20)
-            .padding(.bottom, 16)
-            .confirmationDialog(
-                "Reset this goal? Progress will be archived.",
-                isPresented: $showResetConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Reset Goal", role: .destructive) {
-                    goal.isActive = false
-                }
-            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 16)
+        .confirmationDialog(
+            "Reset this goal? Progress will be archived.",
+            isPresented: $showResetConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Reset Goal", role: .destructive) { goal.isActive = false }
         }
     }
 
@@ -276,6 +276,6 @@ struct HabitsView: View {
     }
 
     private func renumberOrder(goal: HabitGoal) {
-        for (i, h) in sorted(goal.habits).enumerated() { h.order = i }
+        for (index, habit) in sorted(goal.habits).enumerated() { habit.order = index }
     }
 }

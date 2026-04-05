@@ -5,7 +5,6 @@
 //  Ported from presence/lib/scheduleForUser.js MESSAGE_POOL
 //
 
-// TODO: Refine all notification messages
 enum MessagePool {
     static let gratitude: [String] = [
         "What are you grateful for right now?",
@@ -23,7 +22,7 @@ enum MessagePool {
         "What part of today surprised you pleasantly?",
         "What about your surroundings do you appreciate?",
         "What opportunity do you have right now?",
-        "What moment today are you glad happened?",
+        "What moment today are you glad happened?"
     ]
 
     static let bodyAwareness: [String] = [
@@ -40,7 +39,7 @@ enum MessagePool {
         "Take three slow breaths before moving on.",
         "Notice areas of tension in your body.",
         "Slowly scan from your head to toe.",
-        "Feel where your body begins and ends.",
+        "Feel where your body begins and ends."
     ]
 
     static let presentMoment: [String] = [
@@ -58,7 +57,7 @@ enum MessagePool {
         "The present is where your life is.",
         "Put the future down for one breath.",
         "What texture can you feel right now?",
-        "Notice the light in the room now.",
+        "Notice the light in the room now."
     ]
 
     static let meditation: [String] = [
@@ -76,6 +75,6 @@ enum MessagePool {
         "Soften your gaze. Slow your breathing down.",
         "Pause everything. Just sit and breathe.",
         "Release effort. Just notice what is here.",
-        "You have permission to stop and breathe.",
+        "You have permission to stop and breathe."
     ]
 }
