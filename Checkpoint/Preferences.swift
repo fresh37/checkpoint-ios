@@ -49,7 +49,6 @@ struct Preferences: Codable, Equatable {
     var gratitude: Bool = true
     var bodyAwareness: Bool = true
     var presentMoment: Bool = true
-    var hapticFeedback: Bool = true
     var notificationsEnabled: Bool = true
     var breathingPattern: BreathingPattern = .box
     var meditationEnabled: Bool = false

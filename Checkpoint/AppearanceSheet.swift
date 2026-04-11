@@ -89,15 +89,6 @@ private struct ThemeCard: View {
                             .shadow(color: theme.glowColor.opacity(0.35), radius: 10)
                             .shadow(color: theme.glowColor.opacity(0.12), radius: 20)
 
-                        if theme.yarnBall {
-                            Image("yarn-ball")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 48, height: 48)
-                                .scaleEffect(1.45)
-                                .clipShape(Circle())
-                                .allowsHitTesting(false)
-                        }
                     }
                     Spacer()
                     if isSelected {

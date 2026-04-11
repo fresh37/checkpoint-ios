@@ -25,9 +25,6 @@ struct AppTheme: Equatable, Sendable {
     let orbHighlight: Color  // soft diffuse highlight at gradient center
     let orbRim: Color        // subtle deep rim color
     let glowColor: Color     // shadow/glow color for orb and rings
-    // Special features
-    let yarnBall: Bool                  // draws yarn strand overlay on orb (Kitties theme)
-    let backgroundImageNames: [String]  // asset names for faded background photos
 
     // MARK: Built-in themes
 
@@ -46,7 +43,6 @@ struct AppTheme: Equatable, Sendable {
         orbHighlight: Color(red: 0xd8/255, green: 0xec/255, blue: 0xfa/255),
         orbRim: Color(red: 0x38/255, green: 0x80/255, blue: 0xc0/255),
         glowColor: Color(red: 137/255, green: 180/255, blue: 250/255),
-        yarnBall: false, backgroundImageNames: []
     )
 
     static let dusk = AppTheme(
@@ -64,7 +60,6 @@ struct AppTheme: Equatable, Sendable {
         orbHighlight: Color(red: 0xfa/255, green: 0xec/255, blue: 0xd8/255),
         orbRim: Color(red: 0xa8/255, green: 0x60/255, blue: 0x20/255),
         glowColor: Color(red: 0xe0/255, green: 0xa4/255, blue: 0x4a/255),
-        yarnBall: false, backgroundImageNames: []
     )
 
     static let ink = AppTheme(
@@ -82,28 +77,77 @@ struct AppTheme: Equatable, Sendable {
         orbHighlight: Color(red: 0xe0/255, green: 0xde/255, blue: 0xf8/255),
         orbRim: Color(red: 0x50/255, green: 0x48/255, blue: 0x80/255),
         glowColor: Color(red: 0x9b/255, green: 0x8f/255, blue: 0xcc/255),
-        yarnBall: false, backgroundImageNames: []
     )
 
-    static let kitties = AppTheme(
-        id: "kitties",
-        name: "Kitties",
-        background: Color(red: 0x1a/255, green: 0x16/255, blue: 0x12/255),
-        surface: Color(red: 0x26/255, green: 0x1f/255, blue: 0x18/255),
-        accent: Color(red: 0xe0/255, green: 0x78/255, blue: 0x28/255),
-        accentLight: Color(red: 0xf0/255, green: 0xa0/255, blue: 0x50/255),
-        accentDeep: Color(red: 0xc0/255, green: 0x58/255, blue: 0x18/255),
-        muted: Color(red: 0x8a/255, green: 0x70/255, blue: 0x60/255),
+    static let ember = AppTheme(
+        id: "ember",
+        name: "Ember",
+        background: Color(red: 0x14/255, green: 0x0a/255, blue: 0x08/255),
+        surface: Color(red: 0x20/255, green: 0x10/255, blue: 0x0c/255),
+        accent: Color(red: 0xc0/255, green: 0x40/255, blue: 0x28/255),
+        accentLight: Color(red: 0xd8/255, green: 0x6a/255, blue: 0x48/255),
+        accentDeep: Color(red: 0x98/255, green: 0x28/255, blue: 0x14/255),
+        muted: Color(red: 0x80/255, green: 0x60/255, blue: 0x58/255),
         textPrimary: .white.opacity(0.88),
         textMuted: .white.opacity(0.38),
         divider: .white.opacity(0.07),
-        orbHighlight: Color(red: 0xfa/255, green: 0xe8/255, blue: 0xd0/255),
-        orbRim: Color(red: 0xa0/255, green: 0x40/255, blue: 0x10/255),
-        glowColor: Color(red: 0xe0/255, green: 0x78/255, blue: 0x28/255),
-        yarnBall: true, backgroundImageNames: ["cat-scuff", "cat-chive"]
+        orbHighlight: Color(red: 0xf8/255, green: 0xd8/255, blue: 0xcc/255),
+        orbRim: Color(red: 0x78/255, green: 0x18/255, blue: 0x08/255),
+        glowColor: Color(red: 0xc0/255, green: 0x40/255, blue: 0x28/255)
     )
 
-    static let all: [AppTheme] = [.midnight, .dusk, .ink, .kitties]
+    static let forest = AppTheme(
+        id: "forest",
+        name: "Forest",
+        background: Color(red: 0x09/255, green: 0x10/255, blue: 0x0c/255),
+        surface: Color(red: 0x10/255, green: 0x1a/255, blue: 0x13/255),
+        accent: Color(red: 0x5a/255, green: 0x98/255, blue: 0x68/255),
+        accentLight: Color(red: 0x82/255, green: 0xb8/255, blue: 0x90/255),
+        accentDeep: Color(red: 0x3c/255, green: 0x78/255, blue: 0x4c/255),
+        muted: Color(red: 0x5a/255, green: 0x6e/255, blue: 0x5e/255),
+        textPrimary: .white.opacity(0.88),
+        textMuted: .white.opacity(0.38),
+        divider: .white.opacity(0.07),
+        orbHighlight: Color(red: 0xd4/255, green: 0xec/255, blue: 0xda/255),
+        orbRim: Color(red: 0x28/255, green: 0x58/255, blue: 0x38/255),
+        glowColor: Color(red: 0x5a/255, green: 0x98/255, blue: 0x68/255)
+    )
+
+    static let slate = AppTheme(
+        id: "slate",
+        name: "Slate",
+        background: Color(red: 0x0c/255, green: 0x0e/255, blue: 0x10/255),
+        surface: Color(red: 0x14/255, green: 0x18/255, blue: 0x1c/255),
+        accent: Color(red: 0x88/255, green: 0x9a/255, blue: 0xac/255),
+        accentLight: Color(red: 0xa8/255, green: 0xb8/255, blue: 0xc4/255),
+        accentDeep: Color(red: 0x60/255, green: 0x78/255, blue: 0x90/255),
+        muted: Color(red: 0x60/255, green: 0x6c/255, blue: 0x78/255),
+        textPrimary: .white.opacity(0.88),
+        textMuted: .white.opacity(0.38),
+        divider: .white.opacity(0.07),
+        orbHighlight: Color(red: 0xe0/255, green: 0xe8/255, blue: 0xf0/255),
+        orbRim: Color(red: 0x40/255, green: 0x54/255, blue: 0x68/255),
+        glowColor: Color(red: 0x88/255, green: 0x9a/255, blue: 0xac/255)
+    )
+
+    static let rose = AppTheme(
+        id: "rose",
+        name: "Rose",
+        background: Color(red: 0x12/255, green: 0x0c/255, blue: 0x10/255),
+        surface: Color(red: 0x1e/255, green: 0x14/255, blue: 0x1a/255),
+        accent: Color(red: 0xb0/255, green: 0x68/255, blue: 0x88/255),
+        accentLight: Color(red: 0xcc/255, green: 0x90/255, blue: 0xa8/255),
+        accentDeep: Color(red: 0x8c/255, green: 0x48/255, blue: 0x68/255),
+        muted: Color(red: 0x78/255, green: 0x60/255, blue: 0x6c/255),
+        textPrimary: .white.opacity(0.88),
+        textMuted: .white.opacity(0.38),
+        divider: .white.opacity(0.07),
+        orbHighlight: Color(red: 0xf4/255, green: 0xe0/255, blue: 0xe8/255),
+        orbRim: Color(red: 0x78/255, green: 0x38/255, blue: 0x54/255),
+        glowColor: Color(red: 0xb0/255, green: 0x68/255, blue: 0x88/255)
+    )
+
+    static let all: [AppTheme] = [.midnight, .dusk, .ink, .ember, .forest, .slate, .rose]
 
     static func theme(for id: String) -> AppTheme {
         all.first { $0.id == id } ?? .midnight

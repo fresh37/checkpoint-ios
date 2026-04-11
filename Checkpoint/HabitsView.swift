@@ -21,6 +21,7 @@ struct HabitsView: View {
     @State private var showCreateGoal = false
     @State private var showAddHabit = false
     @State private var showResetConfirmation = false
+    @State private var showHistory = false
     @State private var habitToEdit: Habit?
 
     private var activeGoal: HabitGoal? { activeGoals.first }
@@ -55,6 +56,11 @@ struct HabitsView: View {
         }
         .sheet(item: $habitToEdit) { habit in
             EditHabitView(habit: habit)
+        }
+        .sheet(isPresented: $showHistory) {
+            if let goal = activeGoal {
+                HabitHistoryView(goal: goal)
+            }
         }
     }
 
@@ -159,12 +165,7 @@ struct HabitsView: View {
             HStack {
                 Button("Reset Goal") { showResetConfirmation = true }
                 Spacer()
-                Button("Undo") {
-                    if let completion = mostRecentCompletion(for: goal) {
-                        modelContext.delete(completion)
-                    }
-                }
-                .disabled(goal.habits.flatMap(\.completions).isEmpty)
+                Button("History") { showHistory = true }
             }
             .font(.system(size: 14))
             .foregroundColor(.white.opacity(0.25))
@@ -252,21 +253,12 @@ struct HabitsView: View {
         let completion = HabitCompletion(amountCents: habit.rewardCents, habit: habit)
         modelContext.insert(completion)
 
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        generator.impactOccurred()
-
         if goal.currentCents >= goal.targetCents {
             withAnimation(.easeInOut(duration: 0.55)) {
                 goal.isCompleted = true
                 goal.completedAt = Date()
             }
         }
-    }
-
-    private func mostRecentCompletion(for goal: HabitGoal) -> HabitCompletion? {
-        goal.habits
-            .flatMap { $0.completions }
-            .max { $0.completedAt < $1.completedAt }
     }
 
     // MARK: - Helpers

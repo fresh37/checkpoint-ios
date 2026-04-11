@@ -150,7 +150,6 @@ enum NotificationScheduler {
                 let content    = UNMutableNotificationContent()
                 content.body   = messages[index % messages.count]
                 content.sound  = .default
-                if prefs.hapticFeedback { content.interruptionLevel = .active }
 
                 let request = UNNotificationRequest(
                     identifier: "checkpoint.\(dayOffset).\(index).\(UUID().uuidString)",
@@ -190,7 +189,6 @@ enum NotificationScheduler {
                 let content    = UNMutableNotificationContent()
                 content.body   = messages[index % messages.count]
                 content.sound  = .default
-                if prefs.hapticFeedback { content.interruptionLevel = .active }
 
                 let request = UNNotificationRequest(
                     identifier: "checkpoint.med.\(dayOffset).\(index).\(UUID().uuidString)",

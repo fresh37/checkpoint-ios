@@ -59,10 +59,6 @@ struct MainTabView: View {
             theme.background
                 .ignoresSafeArea()
 
-            if !theme.backgroundImageNames.isEmpty {
-                KittiesBackground(imageNames: theme.backgroundImageNames)
-            }
-
             VStack(spacing: 16) {
                 BreathingOrbView(pattern: activePattern, isRunning: orbIsRunning)
 

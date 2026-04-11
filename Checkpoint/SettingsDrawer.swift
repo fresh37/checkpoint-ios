@@ -146,8 +146,6 @@ struct SettingsDrawer: View {
 
                         // System
                         SettingsGroup(label: "System") {
-                            toggleRow(label: "Haptic Feedback", isOn: $draft.hapticFeedback)
-                            rowDivider
                             notificationsRow
                         }
                     }

@@ -126,12 +126,6 @@ struct GoalCompletedView: View {
             withAnimation(.easeIn(duration: 0.6).delay(1.35)) {
                 ringGlowOpacity = 0.0
             }
-
-            // Success haptic timed to ring completion
-            Task { @MainActor in
-                try? await Task.sleep(for: .milliseconds(1000))
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-            }
         }
     }
 }

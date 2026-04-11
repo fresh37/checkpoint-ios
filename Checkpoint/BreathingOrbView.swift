@@ -56,26 +56,11 @@ struct BreathingOrbView: View {
         )
     }
 
-    @State private var yarnRotation: Double = 0
-
     var body: some View {
         VStack(spacing: 20) {
-            ZStack {
-                Circle()
-                    .fill(orbGradient)
-                    .frame(width: 160, height: 160)
-
-                if theme.yarnBall {
-                    Image("yarn-ball")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 160, height: 160)
-                        .scaleEffect(1.45)
-                        .clipShape(Circle())
-                        .rotationEffect(.degrees(yarnRotation))
-                        .allowsHitTesting(false)
-                }
-            }
+            Circle()
+                .fill(orbGradient)
+                .frame(width: 160, height: 160)
             // Inner glow: 60px → 30pt radius  |  expanded: 90px → 45pt
             .shadow(color: theme.glowColor.opacity(isExpanded ? 0.40 : 0.25),
                     radius: isExpanded ? 45 : 30)
@@ -91,24 +76,14 @@ struct BreathingOrbView: View {
                 .id(phase)
                 .transition(.opacity.animation(.easeInOut(duration: 0.3)))
         }
-        .onAppear { startCycle(); startYarnRotation() }
+        .onAppear { startCycle() }
         .onDisappear { breathTask?.cancel() }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active { startCycle(); startYarnRotation() } else { breathTask?.cancel(); breathTask = nil }
+            if newPhase == .active { startCycle() } else { breathTask?.cancel(); breathTask = nil }
         }
         .onChange(of: pattern) { startCycle() }
         .onChange(of: isRunning) { _, running in
-            if running { startCycle(); startYarnRotation() } else { breathTask?.cancel(); breathTask = nil }
-        }
-    }
-
-    // MARK: - Yarn
-
-    private func startYarnRotation() {
-        guard theme.yarnBall else { return }
-        withAnimation(.none) { yarnRotation = 0 }
-        withAnimation(.linear(duration: 90).repeatForever(autoreverses: false)) {
-            yarnRotation = 360
+            if running { startCycle() } else { breathTask?.cancel(); breathTask = nil }
         }
     }
 
