@@ -83,11 +83,11 @@ struct SettingsDrawer: View {
                         SettingsGroup(label: "Schedule", infoAction: { showScheduleInfo = true }) {
                             pickerRow(label: "Start",
                                       selection: $draft.startHour,
-                                      values: Array(5...23))
+                                      values: Array(1...23))
                             rowDivider
                             pickerRow(label: "End",
                                       selection: $draft.endHour,
-                                      values: Array(6...24))
+                                      values: Array(2...24))
                             rowDivider
                             daysRow
                         }
