@@ -188,15 +188,26 @@ extension Color {
 struct SettingsGroup<Content: View>: View {
     @Environment(\.appTheme) private var theme
     let label: String
+    var infoAction: (() -> Void)? = nil
     @ViewBuilder let content: () -> Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(label.uppercased())
-                .font(.system(size: 11, weight: .medium))
-                .tracking(1.2)
-                .foregroundStyle(theme.textMuted)
-                .padding(.leading, 4)
+            HStack(spacing: 6) {
+                Text(label.uppercased())
+                    .font(.system(size: 11, weight: .medium))
+                    .tracking(1.2)
+                    .foregroundStyle(theme.textMuted)
+                if let infoAction {
+                    Button(action: infoAction) {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(theme.textMuted)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.leading, 4)
 
             VStack(spacing: 0) {
                 content()
