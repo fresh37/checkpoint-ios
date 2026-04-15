@@ -19,6 +19,7 @@ struct SettingsDrawer: View {
     @State private var notifStatus: UNAuthorizationStatus = .notDetermined
     @State private var showAppearance = false
     @State private var showCustomMessages = false
+    @State private var showScheduleInfo = false
     @Environment(\.appTheme) private var theme
     @Environment(\.openURL) private var openURL
 
@@ -79,7 +80,7 @@ struct SettingsDrawer: View {
                         }
 
                         // Schedule
-                        SettingsGroup(label: "Schedule") {
+                        SettingsGroup(label: "Schedule", infoAction: { showScheduleInfo = true }) {
                             pickerRow(label: "Start",
                                       selection: $draft.startHour,
                                       values: Array(5...23))
@@ -153,6 +154,11 @@ struct SettingsDrawer: View {
                     .padding(.top, 16)
                     .padding(.bottom, 32)
                 }
+            }
+            .alert("About Your Schedule", isPresented: $showScheduleInfo) {
+                Button("Got it") { }
+            } message: {
+                Text("Notifications are spread naturally across your schedule window, so they arrive at varied times rather than all at once.")
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
