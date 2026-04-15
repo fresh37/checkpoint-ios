@@ -89,7 +89,7 @@ struct SettingsDrawer: View {
                                       selection: $draft.endHour,
                                       values: Array(2...24))
                             rowDivider
-                            daysRow
+                            daysRow(activeDays: $draft.activeDays)
                         }
 
                         // Categories
@@ -142,6 +142,8 @@ struct SettingsDrawer: View {
                                 pickerRow(label: "End",
                                           selection: $draft.meditationEndHour,
                                           values: Array(1...24))
+                                rowDivider
+                                daysRow(activeDays: $draft.meditationActiveDays)
                             }
                         }
 
@@ -244,15 +246,15 @@ private extension SettingsDrawer {
         .padding(.vertical, 11)
     }
 
-    var daysRow: some View {
+    func daysRow(activeDays: Binding<Set<Int>>) -> some View {
         HStack(spacing: 0) {
             ForEach([1, 2, 3, 4, 5, 6, 7], id: \.self) { day in
-                let isOn = draft.activeDays.contains(day)
+                let isOn = activeDays.wrappedValue.contains(day)
                 Button {
-                    if isOn && draft.activeDays.count > 1 {
-                        draft.activeDays.remove(day)
+                    if isOn && activeDays.wrappedValue.count > 1 {
+                        activeDays.wrappedValue.remove(day)
                     } else if !isOn {
-                        draft.activeDays.insert(day)
+                        activeDays.wrappedValue.insert(day)
                     }
                 } label: {
                     Text(dayLetter(day))

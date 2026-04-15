@@ -56,6 +56,7 @@ struct Preferences: Codable, Equatable {
     var meditationStartHour: Int = 9
     var meditationEndHour: Int = 21
     var activeDays: Set<Int> = Set(1...7)
+    var meditationActiveDays: Set<Int> = Set(1...7)
     var themeID: String = "midnight"
     var customMessages: [String] = []
     var customMessagesEnabled: Bool = false
@@ -94,6 +95,7 @@ struct Preferences: Codable, Equatable {
             copy.remindersPerDay -= 1
         }
         if copy.activeDays.isEmpty { copy.activeDays = Set(1...7) }
+        if copy.meditationActiveDays.isEmpty { copy.meditationActiveDays = Set(1...7) }
         if copy.meditationEnabled {
             let medOk = (1...50).contains(copy.meditationRemindersPerDay)
                 && (0...23).contains(copy.meditationStartHour)
