@@ -174,6 +174,8 @@ enum NotificationScheduler {
 
         medOuter: for dayOffset in 0..<6 {
             guard let dayStart = calendar.date(byAdding: .day, value: dayOffset, to: today) else { continue }
+            let weekday = calendar.component(.weekday, from: dayStart)
+            guard prefs.meditationActiveDays.contains(weekday) else { continue }
             let offsets  = generateOffsets(count: prefs.meditationRemindersPerDay, windowMinutes: medWindow)
             let messages = buildMeditationPool(count: prefs.meditationRemindersPerDay)
 
